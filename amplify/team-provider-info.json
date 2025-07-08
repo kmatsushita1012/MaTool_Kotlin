@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-matoolkotlin-dev-5bfb1-authRole",
+      "UnauthRoleArn": "arn:aws:iam::825075435763:role/amplify-matoolkotlin-dev-5bfb1-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::825075435763:role/amplify-matoolkotlin-dev-5bfb1-authRole",
+      "Region": "ap-northeast-1",
+      "DeploymentBucketName": "amplify-matoolkotlin-dev-5bfb1-deployment",
+      "UnauthRoleName": "amplify-matoolkotlin-dev-5bfb1-unauthRole",
+      "StackName": "amplify-matoolkotlin-dev-5bfb1",
+      "StackId": "arn:aws:cloudformation:ap-northeast-1:825075435763:stack/amplify-matoolkotlin-dev-5bfb1/3ef5a3b0-4d0b-11f0-b86c-0e227aab3e2b",
+      "AmplifyAppId": "d4unyqtaoxntq"
+    }
+  }
+}
