@@ -1,5 +1,6 @@
 package com.studiomk.matool.presentation.store_view.admin.districts.edit.performance
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -96,5 +97,8 @@ fun AdminPerformanceEditView(store: StoreOf<AdminPerformanceEdit.State, AdminPer
             actionPath = AdminPerformanceEdit.deleteAlertCase,
         )
     )
+    BackHandler(enabled = true) {
+        store.send(AdminPerformanceEdit.Action.CancelTapped)
+    }
 }
 

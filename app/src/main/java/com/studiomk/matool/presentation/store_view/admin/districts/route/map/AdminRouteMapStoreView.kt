@@ -1,5 +1,6 @@
 package com.studiomk.matool.presentation.store_view.admin.districts.route.map
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.studiomk.matool.core.binding.Binding
+import com.studiomk.ktca.core.util.Binding
 import com.studiomk.matool.presentation.store_view.admin.districts.route.map.point.AdminPointEditView
 import com.studiomk.matool.presentation.store_view.shared.notice_alert.NoticeAlertDialog
 import com.studiomk.matool.presentation.view.maps.AdminRouteMapView
@@ -22,7 +23,7 @@ import com.studiomk.matool.presentation.view.navigation.CupertinoToolBar
 import com.studiomk.matool.presentation.view.navigation.CupertinoToolbarLeadingButton
 import com.studiomk.matool.presentation.view.navigation.CupertinoToolbarTrailingButton
 import com.studiomk.ktca.core.store.StoreOf
-import com.studiomk.ktca.ui.NavigationSheet
+import com.studiomk.ktca.ui.Sheet
 import io.github.alexzhirkevich.cupertino.*
 import io.github.alexzhirkevich.cupertino.icons.CupertinoIcons
 import io.github.alexzhirkevich.cupertino.icons.outlined.ArrowUturnLeft
@@ -127,7 +128,7 @@ fun AdminRouteMapStoreView(store: StoreOf<AdminRouteMap.State, AdminRouteMap.Act
             }
         }
     }
-    NavigationSheet (
+    Sheet (
         item = store.optionalScope(
             statePath = AdminRouteMap.destinationKey + AdminRouteMap.Destination.Point.key,
             actionPath = AdminRouteMap.destinationCase + AdminRouteMap.Destination.Point.case
@@ -143,6 +144,9 @@ fun AdminRouteMapStoreView(store: StoreOf<AdminRouteMap.State, AdminRouteMap.Act
             actionPath = AdminRouteMap.alertCase
         )
     )
+    BackHandler(enabled = true) {
+        store.send(AdminRouteMap.Action.CancelTapped)
+    }
 }
 
 // Operationのtext拡張

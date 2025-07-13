@@ -1,5 +1,6 @@
 package com.studiomk.matool.presentation.store_view.admin.districts.top
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.MaterialTheme
@@ -23,7 +24,7 @@ import com.studiomk.matool.presentation.view.navigation.CupertinoToolBar
 import com.studiomk.matool.presentation.view.navigation.CupertinoToolbarLeadingButton
 import com.studiomk.matool.presentation.view.others.LoadingOverlay
 import com.studiomk.ktca.core.store.StoreOf
-import com.studiomk.ktca.ui.FullScreenNavigation
+import com.studiomk.ktca.ui.FullScreen
 import io.github.alexzhirkevich.cupertino.CupertinoHorizontalDivider
 import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
 import io.github.alexzhirkevich.cupertino.icons.CupertinoIcons
@@ -74,8 +75,8 @@ fun AdminDistrictTopStoreView(store: StoreOf<AdminDistrictTop.State, AdminDistri
                     EditableAndExportableItem(
                         text = route.text("m/d T"),
                         onEdit = { store.send(AdminDistrictTop.Action.OnRouteEdit(route)) },
-                        onExport = { }
-//                        onExport = { store.send(AdminDistrictTop.Action.OnRouteExport(route)) }
+//                        onExport = { }
+                        onExport = { store.send(AdminDistrictTop.Action.OnRouteExport(route)) }
                     )
                     CupertinoHorizontalDivider()
                 }
@@ -95,7 +96,7 @@ fun AdminDistrictTopStoreView(store: StoreOf<AdminDistrictTop.State, AdminDistri
         }
     }
     // フルスクリーン遷移
-    FullScreenNavigation(
+    FullScreen(
         item = store.optionalScope(
             statePath = AdminDistrictTop.destinationKey + AdminDistrictTop.Destination.Edit.key,
             actionPath = AdminDistrictTop.destinationCase + AdminDistrictTop.Destination.Edit.case
@@ -103,7 +104,7 @@ fun AdminDistrictTopStoreView(store: StoreOf<AdminDistrictTop.State, AdminDistri
     ) {
         AdminDistrictEditView(store = it)
     }
-    FullScreenNavigation(
+    FullScreen(
         item = store.optionalScope(
             statePath = AdminDistrictTop.destinationKey + AdminDistrictTop.Destination.Location.key,
             actionPath = AdminDistrictTop.destinationCase + AdminDistrictTop.Destination.Location.case
@@ -111,7 +112,7 @@ fun AdminDistrictTopStoreView(store: StoreOf<AdminDistrictTop.State, AdminDistri
     ) {
         AdminLocationStoreView(store = it)
     }
-    FullScreenNavigation(
+    FullScreen(
         item = store.optionalScope(
             statePath = AdminDistrictTop.destinationKey + AdminDistrictTop.Destination.Route.key,
             actionPath = AdminDistrictTop.destinationCase + AdminDistrictTop.Destination.Route.case
@@ -119,7 +120,7 @@ fun AdminDistrictTopStoreView(store: StoreOf<AdminDistrictTop.State, AdminDistri
     ) {
         AdminRouteInfoStoreView(store = it)
     }
-    FullScreenNavigation(
+    FullScreen(
         item = store.optionalScope(
             statePath = AdminDistrictTop.destinationKey + AdminDistrictTop.Destination.Export.key,
             actionPath = AdminDistrictTop.destinationCase + AdminDistrictTop.Destination.Export.case
@@ -134,4 +135,7 @@ fun AdminDistrictTopStoreView(store: StoreOf<AdminDistrictTop.State, AdminDistri
         )
     )
     LoadingOverlay(isLoading = state.isLoading)
+    BackHandler(enabled = true) {
+        store.send(AdminDistrictTop.Action.HomeTapped)
+    }
 }

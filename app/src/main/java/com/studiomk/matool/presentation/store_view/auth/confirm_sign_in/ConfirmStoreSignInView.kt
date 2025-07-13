@@ -1,5 +1,6 @@
 package com.studiomk.matool.presentation.store_view.auth.confirm_sign_in
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.Text
@@ -81,5 +82,8 @@ fun ConfirmSignInView(store: StoreOf<ConfirmSignIn.State, ConfirmSignIn.Action>)
                 actionPath = ConfirmSignIn.alertCase
             )
         )
+        BackHandler(enabled = true) {
+            store.send(ConfirmSignIn.Action.DismissTapped)
+        }
     }
 }

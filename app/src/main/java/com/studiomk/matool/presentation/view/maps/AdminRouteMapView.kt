@@ -4,13 +4,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.studiomk.matool.core.binding.Binding
+import com.studiomk.ktca.core.util.Binding
 import com.google.maps.android.compose.*
 import com.studiomk.matool.domain.entities.routes.Point
 import com.studiomk.matool.domain.entities.routes.Segment
 import com.studiomk.matool.domain.entities.shared.Coordinate
 import com.studiomk.matool.domain.entities.shared.latLng
-import com.studiomk.matool.presentation.utils.SimpleRegion
+import com.studiomk.matool.presentation.utils.CoordinateRegion
 import com.google.android.gms.maps.model.LatLng
 @Composable
 fun AdminRouteMapView(
@@ -19,7 +19,7 @@ fun AdminRouteMapView(
     onMapLongPress: (Coordinate) -> Unit,
     onPointTapped: (Point) -> Unit,
     onPolylineTapped: (Segment) -> Unit,
-    region: Binding<SimpleRegion?>,
+    region: Binding<CoordinateRegion?>,
 ) {
     var cameraPositionState = rememberSyncedCameraState(region)
     GoogleMap(

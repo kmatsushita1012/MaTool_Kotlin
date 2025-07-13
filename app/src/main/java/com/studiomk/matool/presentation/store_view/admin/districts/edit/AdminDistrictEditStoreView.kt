@@ -1,12 +1,13 @@
 package com.studiomk.matool.presentation.store_view.admin.districts.edit
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.studiomk.matool.core.binding.Binding
+import com.studiomk.ktca.core.util.Binding
 import com.studiomk.ktca.core.store.StoreOf
 import com.studiomk.matool.domain.entities.districts.Visibility
 import com.studiomk.matool.domain.entities.districts.label
@@ -25,7 +26,7 @@ import com.studiomk.matool.presentation.view.navigation.CupertinoToolbarLeadingB
 import com.studiomk.matool.presentation.view.navigation.CupertinoToolbarTrailingButton
 import com.studiomk.matool.presentation.view.others.CupertinoForm
 import com.studiomk.matool.presentation.view.others.LoadingOverlay
-import com.studiomk.ktca.ui.FullScreenNavigation
+import com.studiomk.ktca.ui.FullScreen
 import com.studiomk.matool.presentation.view.items.NavigationItem
 
 import io.github.alexzhirkevich.cupertino.CupertinoHorizontalDivider
@@ -140,7 +141,7 @@ fun AdminDistrictEditView(store: StoreOf<AdminDistrictEdit.State, AdminDistrictE
         }
     }
     // 会所編集
-    FullScreenNavigation(
+    FullScreen(
         item = store.optionalScope(
             statePath = AdminDistrictEdit.destinationKey + AdminDistrictEdit.Destination.Base.key,
             actionPath = AdminDistrictEdit.destinationCase + AdminDistrictEdit.Destination.Base.case
@@ -150,7 +151,7 @@ fun AdminDistrictEditView(store: StoreOf<AdminDistrictEdit.State, AdminDistrictE
             store = it
         )
     }
-    FullScreenNavigation(
+    FullScreen(
         item = store.optionalScope(
             statePath = AdminDistrictEdit.destinationKey + AdminDistrictEdit.Destination.Area.key,
             actionPath = AdminDistrictEdit.destinationCase + AdminDistrictEdit.Destination.Area.case
@@ -160,7 +161,7 @@ fun AdminDistrictEditView(store: StoreOf<AdminDistrictEdit.State, AdminDistrictE
             store = it
         )
     }
-    FullScreenNavigation(
+    FullScreen(
         item = store.optionalScope(
             statePath = AdminDistrictEdit.destinationKey + AdminDistrictEdit.Destination.Performance.key,
             actionPath = AdminDistrictEdit.destinationCase + AdminDistrictEdit.Destination.Performance.case
@@ -178,4 +179,7 @@ fun AdminDistrictEditView(store: StoreOf<AdminDistrictEdit.State, AdminDistrictE
         )
     )
     LoadingOverlay(isLoading = state.isLoading)
+    BackHandler(enabled = true) {
+        store.send(AdminDistrictEdit.Action.CancelTapped)
+    }
 }

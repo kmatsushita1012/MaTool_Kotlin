@@ -10,6 +10,7 @@ object ConfirmAlert : ReducerOf<ConfirmAlert.State, ConfirmAlert.Action> {
     data class State(
         val message: String,
         val title: String,
+        val buttonText: String = "削除",
     ) {
         companion object {
             fun delete(

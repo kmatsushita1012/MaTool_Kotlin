@@ -1,6 +1,7 @@
 package com.studiomk.matool.presentation.store_view.admin.districts.route.info
 
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.ListItem
@@ -12,7 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.studiomk.matool.core.binding.Binding
+import com.studiomk.ktca.core.util.Binding
 import com.studiomk.matool.core.binding.localDate
 import com.studiomk.matool.presentation.store_view.admin.districts.route.map.AdminRouteMapStoreView
 import com.studiomk.matool.presentation.view.input.BindableDatePicker
@@ -25,7 +26,7 @@ import com.studiomk.matool.presentation.view.navigation.CupertinoToolbarLeadingB
 import com.studiomk.matool.presentation.view.navigation.CupertinoToolbarTrailingButton
 import com.studiomk.matool.presentation.view.others.LoadingOverlay
 import com.studiomk.ktca.core.store.StoreOf
-import com.studiomk.ktca.ui.FullScreenNavigation
+import com.studiomk.ktca.ui.FullScreen
 import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
 import io.github.alexzhirkevich.cupertino.icons.CupertinoIcons
 import io.github.alexzhirkevich.cupertino.icons.outlined.Mappin
@@ -137,7 +138,7 @@ fun AdminRouteInfoStoreView(store: StoreOf<AdminRouteInfo.State, AdminRouteInfo.
             }
         }
     }
-    FullScreenNavigation (
+    FullScreen (
         item = store.optionalScope(
             statePath = AdminRouteInfo.destinationKey + AdminRouteInfo.Destination.Map.key,
             actionPath = AdminRouteInfo.destinationCase + AdminRouteInfo.Destination.Map.case
@@ -162,6 +163,9 @@ fun AdminRouteInfoStoreView(store: StoreOf<AdminRouteInfo.State, AdminRouteInfo.
         )
     )
 
-    // ローディングオーバーレイ
     LoadingOverlay(isLoading = state.isLoading)
+
+    BackHandler(enabled = true) {
+        store.send(AdminRouteInfo.Action.CancelTapped)
+    }
 }

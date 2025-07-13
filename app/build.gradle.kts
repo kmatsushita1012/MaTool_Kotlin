@@ -23,7 +23,7 @@ android {
         applicationId = "com.studiomk.matool"
         minSdk = 26
         targetSdk = 35
-        versionCode = 8
+        versionCode = 9
         versionName = "2.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -62,6 +62,7 @@ android {
     //JetPack
     buildFeatures {
         compose = true // Composeを有効にする
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "2.0.21"
@@ -138,12 +139,13 @@ dependencies {
     implementation(libs.core)
     implementation(libs.aws.auth.cognito)
     //ktca
-    implementation("com.github.kmatsushita1012.ktca:ktca-core:b1ac45485f")
-    implementation("com.github.kmatsushita1012.ktca:ktca-ui:b1ac45485f")
-    ksp("com.github.kmatsushita1012.ktca:ktca-processor:b1ac45485f")
+    implementation("com.github.kmatsushita1012.ktca:ktca-core:9f355c0ffd")
+    implementation("com.github.kmatsushita1012.ktca:ktca-ui:9f355c0ffd")
+    ksp("com.github.kmatsushita1012.ktca:ktca-processor:9f355c0ffd")
     //Picker
-    implementation("com.seo4d696b75.compose:material3-picker:0.1.5")
+    implementation(libs.material3.picker)
     //launcher
-    implementation ("androidx.core:core-splashscreen:1.0.0")
-
+    implementation (libs.androidx.core.splashscreen)
+    //update
+    implementation("com.google.android.play:app-update:2.1.0")
 }
