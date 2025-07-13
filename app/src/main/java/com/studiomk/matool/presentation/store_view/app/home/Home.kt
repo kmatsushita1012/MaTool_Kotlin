@@ -162,8 +162,8 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
                             isDestinationLoading = false,
                             destination = DestinationState.AdminRegion(
                                 AdminRegionTop.State(
-//                                    region = regionResult.value,
-//                                    districts = districtsResult.value
+                                    region = regionResult.value,
+                                    districts = districtsResult.value
                                 )
                             )
                         ) to Effect.none()

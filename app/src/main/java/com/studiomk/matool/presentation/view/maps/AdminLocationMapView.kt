@@ -8,7 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.studiomk.matool.domain.entities.locations.Location
-import com.studiomk.matool.presentation.utils.SimpleRegion
+import com.studiomk.matool.presentation.utils.CoordinateRegion
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -26,7 +26,7 @@ import kotlinx.coroutines.tasks.await
 fun AdminLocationMap(
     location: Location?,
     modifier: Modifier = Modifier,
-    onRegionChange: (SimpleRegion?) -> Unit = {},
+    onRegionChange: (CoordinateRegion?) -> Unit = {},
 ) {
     //TODO
     val defaultLocation = LatLng(35.681236, 139.767125)

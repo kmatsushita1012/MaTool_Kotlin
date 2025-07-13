@@ -14,7 +14,7 @@ import com.studiomk.matool.core.others.set
 import com.studiomk.matool.domain.entities.routes.*
 import com.studiomk.matool.domain.entities.shared.Coordinate
 import com.studiomk.matool.domain.entities.shared.Information
-import com.studiomk.matool.presentation.utils.SimpleRegion
+import com.studiomk.matool.presentation.utils.CoordinateRegion
 import com.studiomk.matool.presentation.store_view.admin.districts.route.map.point.AdminPointEdit
 import com.studiomk.matool.presentation.store_view.shared.notice_alert.NoticeAlert
 import com.studiomk.matool.presentation.utils.makeRegion
@@ -42,7 +42,7 @@ object AdminRouteMap : ReducerOf<AdminRouteMap.State, AdminRouteMap.Action> {
         val manager: EditManager<Route>,
         val operation: Operation = Operation.Add,
         val events: List<Information>,
-        val region: SimpleRegion?,
+        val region: CoordinateRegion?,
         @ChildState val destination: DestinationState? = null,
         @ChildState val alert: NoticeAlert.State? = null
     ) {
@@ -68,7 +68,7 @@ object AdminRouteMap : ReducerOf<AdminRouteMap.State, AdminRouteMap.Action> {
         data class MapLongPressed(val coordinate: Coordinate) : Action()
         data class AnnotationTapped(val point: Point) : Action()
         data class PolylineTapped(val segment: Segment) : Action()
-        data class RegionChanged(val region: SimpleRegion?) : Action()
+        data class RegionChanged(val region: CoordinateRegion?) : Action()
         object UndoTapped : Action()
         object RedoTapped : Action()
         object DoneTapped : Action()

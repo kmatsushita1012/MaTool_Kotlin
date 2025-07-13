@@ -15,7 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.studiomk.matool.core.theme.HomeCardColors
 import com.studiomk.ktca.core.store.StoreOf
-import com.studiomk.ktca.ui.FullScreenNavigation
+import com.studiomk.ktca.ui.FullScreen
 import com.studiomk.matool.presentation.store_view.auth.login.LoginStoreView
 import com.studiomk.matool.presentation.store_view.admin.districts.top.AdminDistrictTopStoreView
 import com.studiomk.matool.presentation.store_view.app.settings.SettingsStoreView
@@ -117,7 +117,7 @@ fun HomeStoreView(store: StoreOf<Home.State, Home.Action>) {
         }
     }
     // フルスクリーン遷移
-//        FullScreenNavigation(
+//        FullScreen(
 //            item = store.optionalScope(
 //                statePath = Home.destinationKey + Home.Destination.Route.key,
 //                actionPath = Home.destinationCase + Home.Destination.Route.case
@@ -125,7 +125,7 @@ fun HomeStoreView(store: StoreOf<Home.State, Home.Action>) {
 //        ) {
 //            PublicMapStoreView(store = it)
 //        }
-//        FullScreenNavigation(
+//        FullScreen(
 //            item = store.optionalScope(
 //                statePath = Home.destinationKey + Home.Destination.Info.key,
 //                actionPath = Home.destinationCase + Home.Destination.Info.case
@@ -133,7 +133,7 @@ fun HomeStoreView(store: StoreOf<Home.State, Home.Action>) {
 //        ) {
 //            InfoStoreView(store = it)
 //        }
-    FullScreenNavigation(
+    FullScreen(
         item = store.optionalScope(
             statePath = Home.destinationKey + Home.Destination.Login.key,
             actionPath = Home.destinationCase + Home.Destination.Login.case
@@ -141,7 +141,7 @@ fun HomeStoreView(store: StoreOf<Home.State, Home.Action>) {
     ) {
         LoginStoreView(store = it)
     }
-    FullScreenNavigation(
+    FullScreen(
         item = store.optionalScope(
             statePath = Home.destinationKey + Home.Destination.AdminDistrict.key,
             actionPath = Home.destinationCase + Home.Destination.AdminDistrict.case
@@ -149,7 +149,7 @@ fun HomeStoreView(store: StoreOf<Home.State, Home.Action>) {
     ) {
         AdminDistrictTopStoreView(store = it)
     }
-//        FullScreenNavigation(
+//        FullScreen(
 //            item = store.optionalScope(
 //                statePath = Home.destinationKey + Home.Destination.AdminRegion.key,
 //                actionPath = Home.destinationCase + Home.Destination.AdminRegion.case
@@ -157,7 +157,7 @@ fun HomeStoreView(store: StoreOf<Home.State, Home.Action>) {
 //        ) {
 //            AdminRegionStoreView(store = it)
 //        }
-    FullScreenNavigation(
+    FullScreen(
         item = store.optionalScope(
             statePath = Home.destinationKey + Home.Destination.Settings.key,
             actionPath = Home.destinationCase + Home.Destination.Settings.case

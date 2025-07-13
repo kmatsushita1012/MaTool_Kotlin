@@ -1,5 +1,6 @@
 package com.studiomk.matool.di
 
+import android.app.Activity
 import com.studiomk.matool.application.service.AuthService
 import com.studiomk.matool.application.service.LocationService
 

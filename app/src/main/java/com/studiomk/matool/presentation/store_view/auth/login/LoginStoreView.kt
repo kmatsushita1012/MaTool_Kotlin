@@ -1,5 +1,6 @@
 package com.studiomk.matool.presentation.store_view.auth.login
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -15,7 +16,7 @@ import com.studiomk.matool.presentation.view.navigation.CupertinoNavigationView
 import com.studiomk.matool.presentation.view.navigation.CupertinoToolBar
 import com.studiomk.matool.presentation.view.navigation.CupertinoToolbarLeadingButton
 import com.studiomk.ktca.core.store.StoreOf
-import com.studiomk.ktca.ui.FullScreenNavigation
+import com.studiomk.ktca.ui.FullScreen
 import io.github.alexzhirkevich.cupertino.CupertinoButton
 import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
 import io.github.alexzhirkevich.cupertino.icons.CupertinoIcons
@@ -84,12 +85,15 @@ fun LoginStoreView(store: StoreOf<Login.State, Login.Action>) {
         }
     }
     // ConfirmSignInのフルスクリーン表示
-    FullScreenNavigation(
+    FullScreen(
         item = store.optionalScope(
             statePath = Login.confirmSignInKey,
             actionPath = Login.confirmSignInCase
         )
     ) {
         ConfirmSignInView(it)
+    }
+    BackHandler(enabled = true) {
+        store.send(Login.Action.HomeTapped)
     }
 }

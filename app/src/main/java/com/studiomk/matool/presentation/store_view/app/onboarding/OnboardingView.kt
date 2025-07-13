@@ -9,7 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.studiomk.matool.core.binding.Binding
+import com.studiomk.ktca.core.util.Binding
 import com.studiomk.matool.presentation.view.others.LoadingOverlay
 import com.studiomk.matool.presentation.view.input.MenuSelector
 import io.github.alexzhirkevich.cupertino.*

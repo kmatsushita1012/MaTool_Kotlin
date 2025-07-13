@@ -1,5 +1,6 @@
 package com.studiomk.matool.domain.entities.shared
 
+import com.studiomk.matool.core.others.Identifiable
 import com.studiomk.matool.core.serialize.LocalDateTimeSerializer
 import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
@@ -8,12 +9,12 @@ import java.util.*
 
 @Serializable
 data class Span(
-    val id: String,
+    override val id: String,
     @Serializable(with = LocalDateTimeSerializer::class)
     val start: LocalDateTime,
     @Serializable(with = LocalDateTimeSerializer::class)
     val end: LocalDateTime
-) : Comparable<Span> {
+) : Comparable<Span>, Identifiable<String> {
     override fun compareTo(other: Span): Int {
         return start.compareTo(other.start)
     }
