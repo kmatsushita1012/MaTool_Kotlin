@@ -10,11 +10,8 @@ data class CoordinateRegion(
     val longitudeDelta: Double
 ){
     fun toLatLngBounds(): LatLngBounds {
-        var latSpan = latitudeDelta
-        var lonSpan = longitudeDelta
-
-        val halfLat = latSpan / 2
-        val halfLon = lonSpan / 2
+        val halfLat = latitudeDelta / 2
+        val halfLon = longitudeDelta / 2
 
         return LatLngBounds(
             LatLng(center.latitude - halfLat, center.longitude - halfLon),
