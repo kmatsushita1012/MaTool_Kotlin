@@ -7,7 +7,6 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Route
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -15,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import com.studiomk.ktca.core.util.Binding
 import com.studiomk.matool.presentation.store_view.shared.notice_alert.NoticeAlertDialog
 import com.studiomk.matool.presentation.view.maps.AdminRouteExportMapView
@@ -28,7 +26,9 @@ import io.github.alexzhirkevich.cupertino.icons.CupertinoIcons
 import io.github.alexzhirkevich.cupertino.icons.outlined.ChevronBackward
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.text.font.FontWeight
 import com.studiomk.matool.presentation.utils.makeRegion
 import com.studiomk.matool.presentation.view.maps.rememberSyncedCameraState
 import kotlinx.coroutines.CoroutineScope
@@ -62,7 +62,12 @@ fun AdminRouteExportStoreView(store: StoreOf<AdminRouteExport.State, AdminRouteE
                         text = "戻る"
                     )
                 },
-                center = { Text(state.title, modifier = Modifier.padding(horizontal = 8.dp)) },
+                center = {
+                    Text(
+                        state.title,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
                 trailing = {
                     Row {
                         CupertinoIconButton(
@@ -80,7 +85,7 @@ fun AdminRouteExportStoreView(store: StoreOf<AdminRouteExport.State, AdminRouteE
                                                 widthPx = screenW,
                                                 heightPx = screenH
                                             )
-                                            savePdf(snapshot, "行動図（一部）")
+                                            savePdf(snapshot, state.partialPath)
                                         }
                                     }
                                 }
@@ -88,7 +93,7 @@ fun AdminRouteExportStoreView(store: StoreOf<AdminRouteExport.State, AdminRouteE
                             }
                         ) {
                             CupertinoIcon(
-                                Icons.Default.Camera,
+                                Icons.Default.PhotoCamera,
                                 contentDescription = null
                             )
                         }
@@ -101,17 +106,14 @@ fun AdminRouteExportStoreView(store: StoreOf<AdminRouteExport.State, AdminRouteE
                                     paddingRatio = 1.3
                                 )
                                 region?.let {
-                                    Log.d("MapView", "region ${it}")
                                     scope.launch {
-                                        Log.d("MapView", "launch")
                                         val snapshot = createRouteExportSnapshotWithOverlay(
                                             context = context,
                                             points = state.points,
                                             segments = state.segments,
                                             region = it,
                                         )
-                                        Log.d("MapView", "snapshot")
-                                        savePdf(snapshot, "行動図（全体）")
+                                        savePdf(snapshot, state.wholePath)
                                     }
                                 }
                             }
@@ -128,7 +130,6 @@ fun AdminRouteExportStoreView(store: StoreOf<AdminRouteExport.State, AdminRouteE
             )
         }
     ) {
-        // 背景のMap
         Box(modifier = Modifier
             .fillMaxSize()
         ) {
@@ -144,16 +145,17 @@ fun AdminRouteExportStoreView(store: StoreOf<AdminRouteExport.State, AdminRouteE
                     }
             )
         }
-    }
-    NoticeAlertDialog(
-        store = store.optionalScope(
-            statePath = AdminRouteExport.alertKey,
-            actionPath = AdminRouteExport.alertCase
+        NoticeAlertDialog(
+            store = store.optionalScope(
+                statePath = AdminRouteExport.alertKey,
+                actionPath = AdminRouteExport.alertCase
+            )
         )
-    )
-    BackHandler(enabled = true) {
-        store.send(AdminRouteExport.Action.DismissTapped)
+        BackHandler {
+            store.send(AdminRouteExport.Action.DismissTapped)
+        }
     }
+
 }
 
 @Composable
@@ -161,14 +163,11 @@ fun rememberSavePdfLauncher(
     scope: CoroutineScope = rememberCoroutineScope()
 ): (ImageBitmap, String) -> Unit {
     val context = LocalContext.current
-    // ❶ 保存待ちのスナップショットを保持
     var pendingSnapshot by remember { mutableStateOf<ImageBitmap?>(null) }
-
-    // ❷ CreateDocument のランチャ
     val launcher = rememberLauncherForActivityResult(
         CreateDocument("application/pdf")
     ) { uri: Uri? ->
-        val snapshot = pendingSnapshot   // コールバック内で参照
+        val snapshot = pendingSnapshot
         if (uri != null && snapshot != null) {
             scope.launch {
                 val ok = try {
@@ -200,10 +199,8 @@ fun rememberSavePdfLauncher(
                 ).show()
             }
         }
-        pendingSnapshot = null           // 後片付け
+        pendingSnapshot = null
     }
-
-    // ❸ 呼び出し側に返すラムダ
     return remember {
         { snapshot: ImageBitmap, fileName: String ->
             pendingSnapshot = snapshot

@@ -54,7 +54,6 @@ fun AdminRouteInfoStoreView(store: StoreOf<AdminRouteInfo.State, AdminRouteInfo.
                 center = {
                     Text(
                         if (state.mode.isCreate) "新規作成" else "編集",
-                        modifier = Modifier.padding(horizontal = 8.dp),
                         fontWeight = FontWeight.Bold
                     )
                 },

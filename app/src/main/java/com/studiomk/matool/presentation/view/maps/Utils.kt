@@ -116,7 +116,7 @@ fun CupertinoMarker(
                     ) {
                         OutlinedText(
                             text = label,
-                            textStyle = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                            textStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                             stroke = Stroke(width = 6f),
                             strokeColor = Color.White,
                         )
