@@ -20,7 +20,6 @@ data class PublicRoute(
     companion object
 }
 
-// テキスト変換
 fun PublicRoute.text(format: String): String {
     val sb = StringBuilder()
     var i = 0
@@ -56,7 +55,6 @@ fun PublicRoute.text(format: String): String {
     return sb.toString()
 }
 
-// Routeへの変換
 fun PublicRoute.toModel(): Route = Route(
     id = id,
     districtId = districtId,
@@ -69,7 +67,6 @@ fun PublicRoute.toModel(): Route = Route(
     goal = goal
 )
 
-// RouteからPublicRouteを生成
 fun PublicRoute.Companion.fromRoute(route: Route, name: String): PublicRoute =
     PublicRoute(
         id = route.id,

@@ -19,11 +19,9 @@ data class Route(
     companion object
 }
 
-// テキストプロパティ（現状空文字返却）
 val Route.text: String
     get() = ""
 
-// サンプル
 val Route.Companion.sample: Route
     get() = Route(
         id = UUID.randomUUID().toString(),

@@ -87,7 +87,6 @@ object AdminPointEdit : ReducerOf<AdminPointEdit.State, AdminPointEdit.Action> {
                 }
             }
         } + Reduce{ state, action ->
-            Log.d("AdminPointEdit", "Action: $action, Menu: ${state.showPopover} Events ${state.events.size}")
             state to Effect.none()
         }
 }

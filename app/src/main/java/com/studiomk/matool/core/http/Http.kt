@@ -53,7 +53,6 @@ class Http private constructor() {
             accessToken: String? = null
         ): Result<ByteArray, Exception> {
             val url = makeUrl(base, path, query)
-            Log.d("MyLog","$method $url")
             val request = HttpRequest(url, method, body, accessToken)
             return executeHttpRequest(request)
         }

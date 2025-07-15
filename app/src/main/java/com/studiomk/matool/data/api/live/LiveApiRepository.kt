@@ -183,7 +183,6 @@ class LiveApiRepository(
     private inline fun <reified T> encodeRequest(obj: T): Result<ByteArray, Exception> {
         return try {
             val data = json.encodeToString(obj).toByteArray(Charsets.UTF_8)
-            Log.d("encodeRequest", json.encodeToString(obj))
             Success(data)
         } catch (e: Exception) {
             Failure(e)

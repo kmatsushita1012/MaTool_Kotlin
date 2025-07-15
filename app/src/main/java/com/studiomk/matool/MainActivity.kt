@@ -78,9 +78,10 @@ class MainActivity : ComponentActivity(), KoinComponent {
                         HomeStoreView(store)
                     } else {
                         val store = Store(
-                            Onboarding.State(onSet = {
-                                Log.d("MainActivity","onSet")
-                                hasSet = true }
+                            Onboarding.State(
+                                onSet = {
+                                    hasSet = true 
+                                }
                             ),
                             Onboarding
                         )

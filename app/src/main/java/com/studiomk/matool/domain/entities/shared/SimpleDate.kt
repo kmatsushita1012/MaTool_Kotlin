@@ -22,7 +22,6 @@ operator fun SimpleDate.compareTo(other: SimpleDate): Int {
     }
 }
 
-// 書式付きテキスト変換
 @SuppressLint("DefaultLocale")
 fun SimpleDate.text(format: String): String {
     val sb = StringBuilder()
@@ -38,7 +37,7 @@ fun SimpleDate.text(format: String): String {
             'm' -> {
                 if (nextChar == '2') {
                     sb.append(String.format("%02d", month))
-                    i++ // consume nextChar
+                    i++
                 } else {
                     sb.append(month)
                 }

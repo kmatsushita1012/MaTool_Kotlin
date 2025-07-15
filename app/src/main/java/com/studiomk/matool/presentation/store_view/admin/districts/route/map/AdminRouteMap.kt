@@ -131,7 +131,6 @@ object AdminRouteMap : ReducerOf<AdminRouteMap.State, AdminRouteMap.Action> {
                                     val points = it.points.replace(point)
                                     var segments = it.segments
                                     if (index > 0) {
-                                        Log.d("AdminRouteMap", "move1 index: $index")
                                         val segment = Segment(
                                             id = UUID.randomUUID().toString(),
                                             start = it.points[index - 1].coordinate,
@@ -140,7 +139,6 @@ object AdminRouteMap : ReducerOf<AdminRouteMap.State, AdminRouteMap.Action> {
                                         segments = segments.set(index-1, segment)
                                     }
                                     if (index < it.segments.size) {
-                                        Log.d("AdminRouteMap", "move2 index: $index")
                                         val segment = Segment(
                                             id = UUID.randomUUID().toString(),
                                             start = coordinate,
@@ -178,7 +176,6 @@ object AdminRouteMap : ReducerOf<AdminRouteMap.State, AdminRouteMap.Action> {
                                             start= it.points[index-1].coordinate,
                                             end= coordinate
                                         )
-                                        Log.d("AdminRouteMap", "insert1 index: $index")
                                         segments = segments.set(index-1, segment)
                                     }
                                     var segment = Segment (
