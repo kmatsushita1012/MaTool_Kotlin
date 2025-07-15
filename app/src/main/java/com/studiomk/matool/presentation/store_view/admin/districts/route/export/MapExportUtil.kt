@@ -11,7 +11,6 @@ import android.view.View
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.graphics.createBitmap
-import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
@@ -75,10 +74,10 @@ suspend fun createRouteExportSnapshotWithOverlay(
                 if(cameraPosition!=null)
                     CameraUpdateFactory.newCameraPosition(cameraPosition)
                 else
-                    CameraUpdateFactory.newLatLngBounds(region.toLatLngBounds(), 10)
+                    CameraUpdateFactory.newLatLngBounds(region.toLatLngBounds(), 0)
             gMap.moveCamera(cameraUpdate)
             gMap.drawRoute(segments, scale)
-            gMap.drawPoints(context, points, region, scale, Pair(widthPx, heightPx))
+            gMap.drawPoints(context, points, scale)
             gMap.setOnMapLoadedCallback {
                 gMap.snapshot { bitmap ->
                     if (cont.isCancelled) {
@@ -137,16 +136,13 @@ fun GoogleMap.drawRoute(
 fun GoogleMap.drawPoints(
     context: Context,
     points: List<Point>,
-    region: CoordinateRegion,
     scale: Float,
-    screen: Pair<Int,Int>
 ) {
-    val (widthPx, heightPx) = screen
     val placedRects = mutableListOf<RectF>()
     val redCircleBitmap = createRedCircleBitmap(context)
     val descriptor = BitmapDescriptorFactory.fromBitmap(redCircleBitmap)
 
-    val margin = 12f * scale
+    val margin = 10f * scale
     val padding = 4f * scale
     val borderWidth = 2f * scale
     val lineWidth = 4f * scale
@@ -176,6 +172,9 @@ fun GoogleMap.drawPoints(
     }
 
     points.forEachIndexed { idx, p ->
+        val latitude = p.coordinate.latitude
+        val longitude = p.coordinate.longitude
+
         val caption = buildString {
             append(idx + 1)
             p.title?.let { append(":$it") }
@@ -198,8 +197,8 @@ fun GoogleMap.drawPoints(
         val (bmpWidth, bmpHeight) = Pair(rectWidth + margin, rectHeight + margin)
         val bmp = createBitmap(bmpWidth.toInt(), bmpHeight.toInt())
         val canvas = Canvas(bmp)
-
-        val (x, y) = geoToScreen(p.coordinate.latitude, p.coordinate.longitude, region, widthPx, heightPx)
+        val point = projection.toScreenLocation(LatLng(latitude, longitude))
+        val (x, y) = Pair(point.x.toFloat(), point.y.toFloat())
         for (direction in directions) {
             val (dx, dy) = direction
             val (shiftX, shiftY) = Pair(x + dx * margin, y + dy * margin)
@@ -211,9 +210,7 @@ fun GoogleMap.drawPoints(
                 centerY + halfHeight
             )
 
-//            Log.d("MapView", "intersects ${caption} ${direction} ${bounds}")
             if (placedRects.any {
-//                    Log.d("MapView", "intersects ${caption} ${it}")
                 it.intersects(bounds)
             }){
                 continue
@@ -279,35 +276,6 @@ fun createRedCircleBitmap(context: Context, diameter: Int = 12): Bitmap {
     val radius = diameter / 2f
     canvas.drawCircle(radius, radius, radius, paint)
     return bitmap
-}
-fun geoToScreen(
-    lat: Double,
-    lng: Double,
-    region: CoordinateRegion,
-    widthPx: Int,
-    heightPx: Int
-): Pair<Float, Float> {
-
-    // ─── 1) LatLngBounds を取得 ───
-    val b      = region.toLatLngBounds()      // southwest / northeast
-    var west   = b.southwest.longitude
-    var east   = b.northeast.longitude
-    val south  = b.southwest.latitude
-    val north  = b.northeast.latitude
-
-    // ─── 2) 経度またぎを補正 ───
-    if (east < west) east += 360.0            // 例：170°〜‑170° → 170°〜190°
-
-    var delta = lng
-    if (delta < west) delta += 360.0                 // 候補点も同じ基準で補正
-
-    // ─── 3) 比率を求め線形マッピング ───
-    val xRatio = (delta - west)  / (east - west)   // 0‥1
-    val yRatio = (north - lat) / (north - south)
-
-    val x = (xRatio * widthPx).toFloat()
-    val y = (yRatio * heightPx).toFloat()
-    return x to y
 }
 
 fun RectF.intersects(other: RectF): Boolean =
