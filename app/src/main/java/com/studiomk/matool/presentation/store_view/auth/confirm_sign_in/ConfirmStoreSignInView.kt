@@ -82,8 +82,5 @@ fun ConfirmSignInView(store: StoreOf<ConfirmSignIn.State, ConfirmSignIn.Action>)
                 actionPath = ConfirmSignIn.alertCase
             )
         )
-        BackHandler(enabled = true) {
-            store.send(ConfirmSignIn.Action.DismissTapped)
-        }
     }
 }

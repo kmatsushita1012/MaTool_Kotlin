@@ -1,5 +1,6 @@
 package com.studiomk.matool.presentation.store_view.admin.districts.route.map.point
 
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -191,7 +192,4 @@ fun AdminPointEditView(store: StoreOf<AdminPointEdit.State, AdminPointEdit.Actio
             actionPath = AdminPointEdit.alertCase
         )
     )
-    BackHandler(enabled = true) {
-        store.send(AdminPointEdit.Action.CancelTapped)
-    }
 }

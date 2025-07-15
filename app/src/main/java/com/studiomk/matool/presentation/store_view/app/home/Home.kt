@@ -66,6 +66,7 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
         object InfoTapped : Action()
         object AdminTapped : Action()
         object SettingsTapped : Action()
+        object DestinationDismissed: Action()
         data class AuthInitializeReceived(val result: Result<UserRole, AuthError>) : Action()
         data class AdminDistrictPrepared(
             val districtResult: Result<PublicDistrict, ApiError>,
@@ -117,6 +118,9 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
                 is Action.InfoTapped -> {
 //                    state.destination = DestinationState.Info(Info.State())
                     state to Effect.none()
+                }
+                is Action.DestinationDismissed -> {
+                    state.copy(destination = null) to Effect.none()
                 }
                 is Action.AdminTapped -> {
                     when (val role = state.userRole) {

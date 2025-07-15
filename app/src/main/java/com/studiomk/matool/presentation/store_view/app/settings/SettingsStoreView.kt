@@ -1,5 +1,6 @@
 package com.studiomk.matool.presentation.store_view.app.settings
 
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -132,7 +133,4 @@ fun SettingsStoreView(store: StoreOf<Settings.State, Settings.Action>) {
         )
     )
     LoadingOverlay(isLoading = state.isLoading)
-    BackHandler(enabled = true) {
-        store.send(Settings.Action.DismissTapped)
-    }
 }

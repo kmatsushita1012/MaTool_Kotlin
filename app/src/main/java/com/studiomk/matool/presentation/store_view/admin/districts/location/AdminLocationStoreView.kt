@@ -1,5 +1,6 @@
 package com.studiomk.matool.presentation.store_view.admin.districts.location
 
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -112,7 +113,4 @@ fun AdminLocationStoreView(store: StoreOf<AdminLocation.State, AdminLocation.Act
             actionPath = AdminLocation.alertCase
         ),
     )
-    BackHandler(enabled = true) {
-        store.send(AdminLocation.Action.DismissTapped)
-    }
 }

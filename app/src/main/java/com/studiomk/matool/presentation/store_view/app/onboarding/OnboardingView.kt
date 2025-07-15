@@ -1,5 +1,6 @@
 package com.studiomk.matool.presentation.store_view.app.onboarding
 
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.*

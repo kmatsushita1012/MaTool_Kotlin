@@ -1,6 +1,6 @@
 package com.studiomk.matool.presentation.store_view.auth.confirm_sign_in
 
-import android.util.Log
+
 import com.studiomk.matool.application.service.AuthService
 import com.studiomk.matool.domain.contracts.auth.AuthError
 import com.studiomk.matool.domain.entities.shared.*

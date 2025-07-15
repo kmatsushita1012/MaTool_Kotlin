@@ -1,6 +1,6 @@
 package com.studiomk.matool.presentation.store_view.admin.districts.route.map
 
-import android.util.Log
+
 import com.studiomk.ktca.core.reducer.Reduce
 import com.studiomk.ktca.core.reducer.ReducerOf
 import com.studiomk.ktca.core.effect.Effect
@@ -73,6 +73,7 @@ object AdminRouteMap : ReducerOf<AdminRouteMap.State, AdminRouteMap.Action> {
         object RedoTapped : Action()
         object DoneTapped : Action()
         object CancelTapped : Action()
+        object DestinationDismissed : Action()
         @ChildAction data class Alert(val action: NoticeAlert.Action) : Action()
         @ChildAction data class Destination(val action: DestinationAction) : Action()
     }
@@ -227,6 +228,7 @@ object AdminRouteMap : ReducerOf<AdminRouteMap.State, AdminRouteMap.Action> {
                 }
                 is Action.DoneTapped -> state to Effect.none()
                 is Action.CancelTapped -> state to Effect.none()
+                is Action.DestinationDismissed -> state.copy(destination = null) to Effect.none()
                 is Action.Destination -> {
                     when (val destination = action.action) {
                         is DestinationAction.Point -> {

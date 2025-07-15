@@ -1,5 +1,6 @@
 package com.studiomk.matool.presentation.store_view.admin.districts.edit
 
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -19,7 +20,6 @@ import com.studiomk.matool.presentation.view.input.CupertinoTextEditor
 import com.studiomk.matool.presentation.view.input.CupertinoTextField
 import com.studiomk.matool.presentation.view.input.ListItemButton
 import com.studiomk.matool.presentation.view.input.PickerMenu
-import com.studiomk.matool.presentation.view.items.EditableListItemView
 import com.studiomk.matool.presentation.view.navigation.CupertinoNavigationView
 import com.studiomk.matool.presentation.view.navigation.CupertinoToolBar
 import com.studiomk.matool.presentation.view.navigation.CupertinoToolbarLeadingButton
@@ -28,7 +28,6 @@ import com.studiomk.matool.presentation.view.others.CupertinoForm
 import com.studiomk.matool.presentation.view.others.LoadingOverlay
 import com.studiomk.ktca.ui.FullScreen
 import com.studiomk.matool.presentation.view.items.NavigationItem
-
 import io.github.alexzhirkevich.cupertino.CupertinoHorizontalDivider
 import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
 import io.github.alexzhirkevich.cupertino.icons.CupertinoIcons
@@ -145,7 +144,8 @@ fun AdminDistrictEditView(store: StoreOf<AdminDistrictEdit.State, AdminDistrictE
         item = store.optionalScope(
             statePath = AdminDistrictEdit.destinationKey + AdminDistrictEdit.Destination.Base.key,
             actionPath = AdminDistrictEdit.destinationCase + AdminDistrictEdit.Destination.Base.case
-        )
+        ),
+        onDismiss = { store.send(AdminDistrictEdit.Action.DestinationDismissed) }
     ) {
         AdminBaseEditView(
             store = it
@@ -155,7 +155,8 @@ fun AdminDistrictEditView(store: StoreOf<AdminDistrictEdit.State, AdminDistrictE
         item = store.optionalScope(
             statePath = AdminDistrictEdit.destinationKey + AdminDistrictEdit.Destination.Area.key,
             actionPath = AdminDistrictEdit.destinationCase + AdminDistrictEdit.Destination.Area.case
-        )
+        ),
+        onDismiss = { store.send(AdminDistrictEdit.Action.DestinationDismissed) }
     ) {
         AdminAreaEditView(
             store = it
@@ -165,7 +166,8 @@ fun AdminDistrictEditView(store: StoreOf<AdminDistrictEdit.State, AdminDistrictE
         item = store.optionalScope(
             statePath = AdminDistrictEdit.destinationKey + AdminDistrictEdit.Destination.Performance.key,
             actionPath = AdminDistrictEdit.destinationCase + AdminDistrictEdit.Destination.Performance.case
-        )
+        ),
+        onDismiss = { store.send(AdminDistrictEdit.Action.DestinationDismissed) }
     ) {
         AdminPerformanceEditView(
             store = it
@@ -179,7 +181,4 @@ fun AdminDistrictEditView(store: StoreOf<AdminDistrictEdit.State, AdminDistrictE
         )
     )
     LoadingOverlay(isLoading = state.isLoading)
-    BackHandler(enabled = true) {
-        store.send(AdminDistrictEdit.Action.CancelTapped)
-    }
 }

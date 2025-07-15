@@ -1,5 +1,7 @@
 package com.studiomk.matool.presentation.store_view.app.home
 
+
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -115,6 +117,9 @@ fun HomeStoreView(store: StoreOf<Home.State, Home.Action>) {
                 }
             }
         }
+        BackHandler(enabled = true) {
+            Log.d("Home", "BackHandler")
+        }
     }
     // フルスクリーン遷移
 //        FullScreen(
@@ -137,7 +142,8 @@ fun HomeStoreView(store: StoreOf<Home.State, Home.Action>) {
         item = store.optionalScope(
             statePath = Home.destinationKey + Home.Destination.Login.key,
             actionPath = Home.destinationCase + Home.Destination.Login.case
-        )
+        ),
+        onDismiss = { store.send(Home.Action.DestinationDismissed) }
     ) {
         LoginStoreView(store = it)
     }
@@ -145,7 +151,8 @@ fun HomeStoreView(store: StoreOf<Home.State, Home.Action>) {
         item = store.optionalScope(
             statePath = Home.destinationKey + Home.Destination.AdminDistrict.key,
             actionPath = Home.destinationCase + Home.Destination.AdminDistrict.case
-        )
+        ),
+        onDismiss = { store.send(Home.Action.DestinationDismissed) }
     ) {
         AdminDistrictTopStoreView(store = it)
     }
@@ -161,10 +168,12 @@ fun HomeStoreView(store: StoreOf<Home.State, Home.Action>) {
         item = store.optionalScope(
             statePath = Home.destinationKey + Home.Destination.Settings.key,
             actionPath = Home.destinationCase + Home.Destination.Settings.case
-        )
+        ),
+        onDismiss = { store.send(Home.Action.DestinationDismissed) }
     ) {
         SettingsStoreView(store = it)
     }
+    LoadingOverlay(isLoading = state.isLoading)
 
     NoticeAlertDialog(
         store = store.optionalScope(
@@ -172,8 +181,6 @@ fun HomeStoreView(store: StoreOf<Home.State, Home.Action>) {
             actionPath = Home.alertCase
         )
     )
-    LoadingOverlay(isLoading = state.isLoading)
-
     // onAppear
     LaunchedEffect(Unit) {
         store.send(Home.Action.OnAppear)
