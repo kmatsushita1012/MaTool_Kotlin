@@ -1,6 +1,6 @@
 package com.studiomk.matool.presentation.view.maps
 
-import android.util.Log
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
@@ -55,7 +55,6 @@ fun rememberSyncedCameraState(
         cameraPositionState.projection?.visibleRegion?.latLngBounds?.let { vis ->
 
             val adjusted = CoordinateRegion.fromLatLngBounds(vis)
-            Log.d("MapView", "vis: ${adjusted != lastSynced}")
             if (adjusted != lastSynced) {                  // 画面比率で補正された？
                 lastSynced = adjusted
                 region.set(adjusted)                       // ★ 送り返す ★

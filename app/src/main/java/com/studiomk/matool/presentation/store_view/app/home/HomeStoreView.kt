@@ -117,9 +117,6 @@ fun HomeStoreView(store: StoreOf<Home.State, Home.Action>) {
                 }
             }
         }
-        BackHandler(enabled = true) {
-            Log.d("Home", "BackHandler")
-        }
     }
     // フルスクリーン遷移
 //        FullScreen(

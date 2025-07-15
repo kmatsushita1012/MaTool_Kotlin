@@ -73,7 +73,6 @@ fun AdminRouteExportStoreView(store: StoreOf<AdminRouteExport.State, AdminRouteE
                         CupertinoIconButton(
                             onClick = {
                                 size?.let{ (screenW, screenH) ->
-                                    Log.d("MapView", "screenSize ${screenW}x${screenH}")
                                     state.region?.let {
                                         scope.launch {
                                             val  snapshot = createRouteExportSnapshotWithOverlay(

@@ -91,7 +91,6 @@ object ConfirmSignIn: ReducerOf<ConfirmSignIn.State, ConfirmSignIn.Action>, Koin
                 }
             }
         } + Reduce { state,action ->
-            Log.d("ConfirmSignIn", "action: $action")
             state to Effect.none()
         }
 
