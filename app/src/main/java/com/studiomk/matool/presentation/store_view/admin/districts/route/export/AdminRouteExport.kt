@@ -19,7 +19,9 @@ object AdminRouteExport : ReducerOf<AdminRouteExport.State, AdminRouteExport.Act
 
     data class State(
         val route: PublicRoute,
-        var region: CoordinateRegion? = makeRegion(coordinates = route.points.map { it.coordinate }),
+        var region: CoordinateRegion? = makeRegion(
+            coordinates = route.segments.flatMap { it.coordinates },
+        ),
         @ChildState var alert: NoticeAlert.State? = null
     ) {
         val points: List<Point>

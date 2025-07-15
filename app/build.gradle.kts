@@ -130,7 +130,7 @@ dependencies {
     implementation (libs.play.services.maps)
     implementation(libs.play.services.location)
     implementation(libs.kotlinx.coroutines.play.services)
-    implementation(libs.maps.compose.v660)
+    implementation(libs.maps.compose)
     implementation(libs.maps.compose.utils) //Option
     implementation(libs.maps.compose.widgets) //Option
     //Permission
