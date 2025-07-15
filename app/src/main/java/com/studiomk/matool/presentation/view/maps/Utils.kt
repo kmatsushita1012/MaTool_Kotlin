@@ -1,5 +1,6 @@
 package com.studiomk.matool.presentation.view.maps
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
@@ -33,20 +34,32 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.google.android.gms.maps.model.LatLng
 
+
 @Composable
 fun rememberSyncedCameraState(
     region: Binding<CoordinateRegion?>
 ): CameraPositionState {
     val cameraPositionState = rememberCameraPositionState()
-    var lastSyncedRegion by remember { mutableStateOf<CoordinateRegion?>(null) }
+    var lastSynced by remember { mutableStateOf<CoordinateRegion?>(null) }
 
     // region が外部から更新されたときカメラを移動
     LaunchedEffect(region.get()) {
-        val newRegion = region.get()
-        if (newRegion != null && newRegion != lastSyncedRegion) {
-            val bounds = newRegion.toLatLngBounds()
-            cameraPositionState.move(CameraUpdateFactory.newLatLngBounds(bounds, 100))
-            lastSyncedRegion = newRegion
+        val ext = region.get() ?: return@LaunchedEffect
+        if (ext == lastSynced) return@LaunchedEffect       // ループ防止
+
+        lastSynced = ext                                   // 先に記録
+        cameraPositionState.animate(
+            CameraUpdateFactory.newLatLngBounds(ext.toLatLngBounds(), 0)
+        )
+
+        cameraPositionState.projection?.visibleRegion?.latLngBounds?.let { vis ->
+
+            val adjusted = CoordinateRegion.fromLatLngBounds(vis)
+            Log.d("MapView", "vis: ${adjusted != lastSynced}")
+            if (adjusted != lastSynced) {                  // 画面比率で補正された？
+                lastSynced = adjusted
+                region.set(adjusted)                       // ★ 送り返す ★
+            }
         }
     }
 
@@ -56,8 +69,8 @@ fun rememberSyncedCameraState(
             val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds ?: return@LaunchedEffect
             val currentRegion = CoordinateRegion.fromLatLngBounds(bounds)
 
-            if (currentRegion != lastSyncedRegion) {
-                lastSyncedRegion = currentRegion
+            if (currentRegion != lastSynced) {
+                lastSynced = currentRegion
                 region.set(currentRegion)
             }
         }
@@ -97,7 +110,9 @@ fun CupertinoMarker(
                 )
                 if (hasLabel) {
                     Box(
-                        modifier = Modifier.height(24.dp).padding(top = 4.dp)
+                        modifier = Modifier
+                            .height(24.dp)
+                            .padding(top = 4.dp)
                     ) {
                         OutlinedText(
                             text = label,
