@@ -33,7 +33,7 @@ fun NoticeAlertDialog(
                 )
             }
         }
-        BackHandler(enabled = true) {
+        BackHandler {
             store.send(NoticeAlert.Action.OkTapped)
         }
     }

@@ -1,6 +1,6 @@
 package com.studiomk.matool.data.api.live
 
-import android.util.Log
+
 import com.studiomk.matool.core.http.Http
 import com.studiomk.matool.domain.entities.districts.*
 import com.studiomk.matool.domain.entities.locations.PublicLocation

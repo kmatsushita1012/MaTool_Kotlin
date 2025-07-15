@@ -93,7 +93,4 @@ fun LoginStoreView(store: StoreOf<Login.State, Login.Action>) {
     ) {
         ConfirmSignInView(it)
     }
-    BackHandler(enabled = true) {
-        store.send(Login.Action.HomeTapped)
-    }
 }

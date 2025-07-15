@@ -69,6 +69,7 @@ object AdminDistrictTop : ReducerOf<AdminDistrictTop.State, AdminDistrictTop.Act
         object OnLocation : Action()
         object SignOutTapped : Action()
         object HomeTapped : Action()
+        object DestinationDismissed : Action()
         data class GetDistrictReceived(val result: Result<PublicDistrict, ApiError>) : Action()
         data class GetRoutesReceived(val result: Result<List<RouteSummary>, ApiError>) : Action()
         data class EditPrepared(val result: Result<DistrictTool, ApiError>,) : Action()
@@ -128,6 +129,9 @@ object AdminDistrictTop : ReducerOf<AdminDistrictTop.State, AdminDistrictTop.Act
                         val result = apiRepository.getRoute(action.route.id, authService.getAccessToken())
                         send(Action.ExportPrepared(result))
                     }
+                }
+                is Action.DestinationDismissed -> {
+                    state.copy(destination = null) to Effect.none()
                 }
                 is Action.GetDistrictReceived -> {
                     when (val result = action.result) {

@@ -2,7 +2,7 @@ package com.studiomk.matool.presentation.store_view.admin.districts.route.export
 
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
-import android.util.Log
+
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
@@ -151,9 +151,7 @@ fun AdminRouteExportStoreView(store: StoreOf<AdminRouteExport.State, AdminRouteE
                 actionPath = AdminRouteExport.alertCase
             )
         )
-        BackHandler {
-            store.send(AdminRouteExport.Action.DismissTapped)
-        }
+
     }
 
 }

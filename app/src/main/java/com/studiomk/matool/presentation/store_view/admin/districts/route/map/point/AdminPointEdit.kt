@@ -11,7 +11,7 @@ import com.studiomk.ktca.core.reducer.LetScope
 import com.studiomk.ktca.core.reducer.Reduce
 import com.studiomk.ktca.core.reducer.ReducerOf
 import java.time.LocalTime
-import android.util.Log
+
 import com.studiomk.matool.domain.entities.shared.Information
 
 

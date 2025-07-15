@@ -1,5 +1,6 @@
 package com.studiomk.matool.presentation.store_view.admin.districts.edit.base
 
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -93,8 +94,5 @@ fun AdminBaseEditView(store: StoreOf<AdminBaseEdit.State, AdminBaseEdit.Action>)
                 Spacer(modifier = Modifier.weight(1f))
             }
         }
-    }
-    BackHandler(enabled = true) {
-        store.send(AdminBaseEdit.Action.DismissTapped)
     }
 }

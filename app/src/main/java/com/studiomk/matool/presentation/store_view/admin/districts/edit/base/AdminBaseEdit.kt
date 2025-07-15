@@ -1,6 +1,6 @@
 package com.studiomk.matool.presentation.store_view.admin.districts.edit.base
 
-import android.util.Log
+
 import com.studiomk.matool.domain.entities.shared.Coordinate
 import com.studiomk.matool.presentation.utils.CoordinateRegion
 import com.studiomk.matool.presentation.utils.makeRegion
@@ -30,7 +30,6 @@ object AdminBaseEdit : ReducerOf<AdminBaseEdit.State, AdminBaseEdit.Action> {
 
     override fun body(): ReducerOf<State, Action> =
         Reduce { state, action ->
-            Log.d("AdminBaseEdit", "action: $action")
             when (action) {
                 is Action.MapTapped -> {
                     state.copy(base = action.coordinate) to Effect.none()

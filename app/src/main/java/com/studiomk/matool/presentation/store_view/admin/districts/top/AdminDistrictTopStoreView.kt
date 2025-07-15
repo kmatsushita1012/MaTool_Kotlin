@@ -1,6 +1,5 @@
 package com.studiomk.matool.presentation.store_view.admin.districts.top
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.MaterialTheme
@@ -100,7 +99,8 @@ fun AdminDistrictTopStoreView(store: StoreOf<AdminDistrictTop.State, AdminDistri
         item = store.optionalScope(
             statePath = AdminDistrictTop.destinationKey + AdminDistrictTop.Destination.Edit.key,
             actionPath = AdminDistrictTop.destinationCase + AdminDistrictTop.Destination.Edit.case
-        )
+        ),
+        onDismiss = {}
     ) {
         AdminDistrictEditView(store = it)
     }
@@ -108,7 +108,8 @@ fun AdminDistrictTopStoreView(store: StoreOf<AdminDistrictTop.State, AdminDistri
         item = store.optionalScope(
             statePath = AdminDistrictTop.destinationKey + AdminDistrictTop.Destination.Location.key,
             actionPath = AdminDistrictTop.destinationCase + AdminDistrictTop.Destination.Location.case
-        )
+        ),
+        onDismiss = { store.send(AdminDistrictTop.Action.DestinationDismissed) }
     ) {
         AdminLocationStoreView(store = it)
     }
@@ -116,7 +117,8 @@ fun AdminDistrictTopStoreView(store: StoreOf<AdminDistrictTop.State, AdminDistri
         item = store.optionalScope(
             statePath = AdminDistrictTop.destinationKey + AdminDistrictTop.Destination.Route.key,
             actionPath = AdminDistrictTop.destinationCase + AdminDistrictTop.Destination.Route.case
-        )
+        ),
+        onDismiss = {}
     ) {
         AdminRouteInfoStoreView(store = it)
     }
@@ -124,7 +126,8 @@ fun AdminDistrictTopStoreView(store: StoreOf<AdminDistrictTop.State, AdminDistri
         item = store.optionalScope(
             statePath = AdminDistrictTop.destinationKey + AdminDistrictTop.Destination.Export.key,
             actionPath = AdminDistrictTop.destinationCase + AdminDistrictTop.Destination.Export.case
-        )
+        ),
+        onDismiss = { store.send(AdminDistrictTop.Action.DestinationDismissed) }
     ) {
         AdminRouteExportStoreView(store = it)
     }
@@ -135,7 +138,4 @@ fun AdminDistrictTopStoreView(store: StoreOf<AdminDistrictTop.State, AdminDistri
         )
     )
     LoadingOverlay(isLoading = state.isLoading)
-    BackHandler(enabled = true) {
-        store.send(AdminDistrictTop.Action.HomeTapped)
-    }
 }

@@ -1,6 +1,6 @@
 package com.studiomk.matool.core.http
 
-import android.util.Log
+
 import com.studiomk.matool.domain.entities.shared.Result
 import java.net.HttpURLConnection
 import java.net.URL

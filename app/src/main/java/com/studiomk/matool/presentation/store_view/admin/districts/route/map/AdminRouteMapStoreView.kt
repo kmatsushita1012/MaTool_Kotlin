@@ -1,5 +1,6 @@
 package com.studiomk.matool.presentation.store_view.admin.districts.route.map
 
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -128,11 +129,13 @@ fun AdminRouteMapStoreView(store: StoreOf<AdminRouteMap.State, AdminRouteMap.Act
             }
         }
     }
+
     Sheet (
         item = store.optionalScope(
             statePath = AdminRouteMap.destinationKey + AdminRouteMap.Destination.Point.key,
             actionPath = AdminRouteMap.destinationCase + AdminRouteMap.Destination.Point.case
-        )
+        ),
+        onDismiss = { store.send(AdminRouteMap.Action.DestinationDismissed) }
     ) {
         AdminPointEditView(
             store = it
@@ -144,9 +147,6 @@ fun AdminRouteMapStoreView(store: StoreOf<AdminRouteMap.State, AdminRouteMap.Act
             actionPath = AdminRouteMap.alertCase
         )
     )
-    BackHandler(enabled = true) {
-        store.send(AdminRouteMap.Action.CancelTapped)
-    }
 }
 
 // Operationのtext拡張

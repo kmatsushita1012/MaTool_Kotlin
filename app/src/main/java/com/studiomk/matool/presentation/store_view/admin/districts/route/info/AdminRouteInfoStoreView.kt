@@ -1,6 +1,7 @@
 package com.studiomk.matool.presentation.store_view.admin.districts.route.info
 
 
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -141,7 +142,8 @@ fun AdminRouteInfoStoreView(store: StoreOf<AdminRouteInfo.State, AdminRouteInfo.
         item = store.optionalScope(
             statePath = AdminRouteInfo.destinationKey + AdminRouteInfo.Destination.Map.key,
             actionPath = AdminRouteInfo.destinationCase + AdminRouteInfo.Destination.Map.case
-        )
+        ),
+        onDismiss = {}
     ) {
         AdminRouteMapStoreView(
             store = it
@@ -161,10 +163,5 @@ fun AdminRouteInfoStoreView(store: StoreOf<AdminRouteInfo.State, AdminRouteInfo.
             actionPath = AdminRouteInfo.alertCase + AdminRouteInfo.AlertDestination.Delete.case,
         )
     )
-
     LoadingOverlay(isLoading = state.isLoading)
-
-    BackHandler(enabled = true) {
-        store.send(AdminRouteInfo.Action.CancelTapped)
-    }
 }

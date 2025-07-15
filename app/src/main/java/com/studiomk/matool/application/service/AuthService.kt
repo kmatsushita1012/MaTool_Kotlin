@@ -1,7 +1,7 @@
 package com.studiomk.matool.application.service
 
 import SignInResult
-import android.util.Log
+
 import com.studiomk.matool.domain.contracts.auth.AuthError
 import com.studiomk.matool.domain.contracts.auth.AuthProvider
 import com.studiomk.matool.domain.contracts.auth.SignInResponse
