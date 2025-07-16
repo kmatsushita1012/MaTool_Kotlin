@@ -1,4 +1,4 @@
-package com.studiomk.matool.presentation.store_view.admin.regions.detail.create
+package com.studiomk.matool.presentation.store_view.admin.regions.district.create
 
 import com.studiomk.ktca.core.reducer.Reduce
 import com.studiomk.ktca.core.reducer.ReducerOf

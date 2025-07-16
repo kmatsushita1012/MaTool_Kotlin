@@ -20,6 +20,7 @@ import com.studiomk.ktca.core.store.StoreOf
 import com.studiomk.ktca.ui.FullScreen
 import com.studiomk.matool.presentation.store_view.auth.login.LoginStoreView
 import com.studiomk.matool.presentation.store_view.admin.districts.top.AdminDistrictTopStoreView
+import com.studiomk.matool.presentation.store_view.admin.regions.top.AdminRegionTopStoreView
 import com.studiomk.matool.presentation.store_view.app.settings.SettingsStoreView
 import com.studiomk.matool.presentation.store_view.shared.notice_alert.NoticeAlertDialog
 import com.studiomk.matool.presentation.view.navigation.CupertinoNavigationView
@@ -153,14 +154,15 @@ fun HomeStoreView(store: StoreOf<Home.State, Home.Action>) {
     ) {
         AdminDistrictTopStoreView(store = it)
     }
-//        FullScreen(
-//            item = store.optionalScope(
-//                statePath = Home.destinationKey + Home.Destination.AdminRegion.key,
-//                actionPath = Home.destinationCase + Home.Destination.AdminRegion.case
-//            )
-//        ) {
-//            AdminRegionStoreView(store = it)
-//        }
+    FullScreen(
+        item = store.optionalScope(
+            statePath = Home.destinationKey + Home.Destination.AdminRegion.key,
+            actionPath = Home.destinationCase + Home.Destination.AdminRegion.case
+        ),
+        onDismiss = { store.send(Home.Action.DestinationDismissed) }
+    ) {
+        AdminRegionTopStoreView(store = it)
+    }
     FullScreen(
         item = store.optionalScope(
             statePath = Home.destinationKey + Home.Destination.Settings.key,

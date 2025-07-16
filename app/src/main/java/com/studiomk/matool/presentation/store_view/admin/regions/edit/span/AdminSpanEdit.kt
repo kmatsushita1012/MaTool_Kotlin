@@ -66,6 +66,9 @@ object AdminSpanEdit : ReducerOf<AdminSpanEdit.State, AdminSpanEdit.Action> {
         object DoneTapped : Action()
         object CancelTapped : Action()
         object DeleteTapped : Action()
+        data class DateChanged(val value: SimpleDate) : Action()
+        data class StartChanged(val value: SimpleTime) : Action()
+        data class EndChanged(val value: SimpleTime) : Action()
         @ChildAction data class Alert(val action: ConfirmAlert.Action) : Action()
     }
 
@@ -85,6 +88,9 @@ object AdminSpanEdit : ReducerOf<AdminSpanEdit.State, AdminSpanEdit.Action> {
                         ) to Effect.none()
                     }
                 }
+                is Action.DateChanged -> state.copy(date = action.value) to Effect.none()
+                is Action.StartChanged -> state.copy(start = action.value) to Effect.none()
+                is Action.EndChanged -> state.copy(end = action.value) to Effect.none()
                 is Action.Alert -> {
                     when (action.action) {
                         is ConfirmAlert.Action.OkTapped -> state.copy(alert = null) to Effect.none()

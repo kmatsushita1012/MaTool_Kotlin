@@ -14,12 +14,12 @@ object LocalDateTimeSerializer : KSerializer<LocalDateTime> {
         PrimitiveSerialDescriptor("LocalDateTime", PrimitiveKind.LONG)
 
     override fun serialize(encoder: Encoder, value: LocalDateTime) {
-        val epochSecond = value.toEpochSecond(ZoneOffset.UTC)
+        val epochSecond = value.toEpochSecond(ZoneOffset.ofHours(9))
         encoder.encodeLong(epochSecond)
     }
 
     override fun deserialize(decoder: Decoder): LocalDateTime {
         val epochSecond = decoder.decodeLong()
-        return LocalDateTime.ofEpochSecond(epochSecond, 0, ZoneOffset.UTC)
+        return LocalDateTime.ofEpochSecond(epochSecond, 0, ZoneOffset.ofHours(9))
     }
 }

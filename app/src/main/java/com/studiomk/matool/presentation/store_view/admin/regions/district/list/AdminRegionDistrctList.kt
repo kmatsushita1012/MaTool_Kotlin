@@ -1,10 +1,11 @@
-package com.studiomk.matool.presentation.store_view.admin.regions.detail.list
+package com.studiomk.matool.presentation.store_view.admin.regions.district.list
 
 import com.studiomk.ktca.core.reducer.Reduce
 import com.studiomk.ktca.core.reducer.ReducerOf
 import com.studiomk.ktca.core.annotation.ChildState
 import com.studiomk.ktca.core.annotation.ChildAction
 import com.studiomk.ktca.core.effect.Effect
+import com.studiomk.ktca.core.reducer.LetScope
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import com.studiomk.matool.domain.contracts.api.ApiRepository
@@ -34,11 +35,22 @@ object AdminRegionDistrictList : ReducerOf<AdminRegionDistrictList.State, AdminR
         data class ExportTapped(val route: RouteSummary) : Action()
         data class ExportPrepared(val result: Result<PublicRoute, ApiError>) : Action()
         object DismissTapped : Action()
+        object DestinationDismissed : Action()
         @ChildAction data class Export(val action: AdminRouteExport.Action) : Action()
         @ChildAction data class Alert(val action: NoticeAlert.Action) : Action()
     }
 
     override fun body(): ReducerOf<State, Action> =
+        LetScope(
+            statePath = exportKey,
+            actionPath = exportCase,
+            reducer = AdminRouteExport
+        ) +
+        LetScope(
+            statePath = alertKey,
+            actionPath = alertCase,
+            reducer = NoticeAlert
+        ) +
         Reduce { state, action ->
             when (action) {
                 is Action.ExportTapped -> {
@@ -50,18 +62,24 @@ object AdminRegionDistrictList : ReducerOf<AdminRegionDistrictList.State, AdminR
                     }
                 }
                 is Action.ExportPrepared -> {
-                    state.isLoading = false
                     when (val result = action.result) {
                         is Result.Success -> {
-                            state.export = AdminRouteExport.State(route = result.value)
+                            state.copy(
+                                isLoading = false,
+                                export = AdminRouteExport.State(route = result.value)
+                            ) to Effect.none()
                         }
                         is Result.Failure -> {
-                            state.alert = NoticeAlert.State.error("情報の取得に失敗しました。\n${result.error.localizedDescription}")
+                            state.copy(
+                                isLoading = false,
+                                alert = NoticeAlert.State.error("情報の取得に失敗しました。\n${result.error.localizedDescription}")
+                            ) to Effect.none()
                         }
                     }
-                    state to Effect.none()
+
                 }
                 is Action.DismissTapped -> state to Effect.none()
+                is Action.DestinationDismissed -> state.copy(export = null) to Effect.none()
                 is Action.Export -> {
                     when (action.action) {
                         is AdminRouteExport.Action.DismissTapped -> {
