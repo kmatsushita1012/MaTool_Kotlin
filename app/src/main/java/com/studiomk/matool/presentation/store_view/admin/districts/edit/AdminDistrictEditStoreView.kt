@@ -1,12 +1,14 @@
 package com.studiomk.matool.presentation.store_view.admin.districts.edit
 
+
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.studiomk.matool.core.binding.Binding
+import com.studiomk.ktca.core.util.Binding
 import com.studiomk.ktca.core.store.StoreOf
 import com.studiomk.matool.domain.entities.districts.Visibility
 import com.studiomk.matool.domain.entities.districts.label
@@ -18,16 +20,14 @@ import com.studiomk.matool.presentation.view.input.CupertinoTextEditor
 import com.studiomk.matool.presentation.view.input.CupertinoTextField
 import com.studiomk.matool.presentation.view.input.ListItemButton
 import com.studiomk.matool.presentation.view.input.PickerMenu
-import com.studiomk.matool.presentation.view.items.EditableListItemView
 import com.studiomk.matool.presentation.view.navigation.CupertinoNavigationView
 import com.studiomk.matool.presentation.view.navigation.CupertinoToolBar
 import com.studiomk.matool.presentation.view.navigation.CupertinoToolbarLeadingButton
 import com.studiomk.matool.presentation.view.navigation.CupertinoToolbarTrailingButton
 import com.studiomk.matool.presentation.view.others.CupertinoForm
 import com.studiomk.matool.presentation.view.others.LoadingOverlay
-import com.studiomk.ktca.ui.FullScreenNavigation
+import com.studiomk.ktca.ui.FullScreen
 import com.studiomk.matool.presentation.view.items.NavigationItem
-
 import io.github.alexzhirkevich.cupertino.CupertinoHorizontalDivider
 import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
 import io.github.alexzhirkevich.cupertino.icons.CupertinoIcons
@@ -140,31 +140,34 @@ fun AdminDistrictEditView(store: StoreOf<AdminDistrictEdit.State, AdminDistrictE
         }
     }
     // 会所編集
-    FullScreenNavigation(
+    FullScreen(
         item = store.optionalScope(
             statePath = AdminDistrictEdit.destinationKey + AdminDistrictEdit.Destination.Base.key,
             actionPath = AdminDistrictEdit.destinationCase + AdminDistrictEdit.Destination.Base.case
-        )
+        ),
+        onDismiss = { store.send(AdminDistrictEdit.Action.DestinationDismissed) }
     ) {
         AdminBaseEditView(
             store = it
         )
     }
-    FullScreenNavigation(
+    FullScreen(
         item = store.optionalScope(
             statePath = AdminDistrictEdit.destinationKey + AdminDistrictEdit.Destination.Area.key,
             actionPath = AdminDistrictEdit.destinationCase + AdminDistrictEdit.Destination.Area.case
-        )
+        ),
+        onDismiss = { store.send(AdminDistrictEdit.Action.DestinationDismissed) }
     ) {
         AdminAreaEditView(
             store = it
         )
     }
-    FullScreenNavigation(
+    FullScreen(
         item = store.optionalScope(
             statePath = AdminDistrictEdit.destinationKey + AdminDistrictEdit.Destination.Performance.key,
             actionPath = AdminDistrictEdit.destinationCase + AdminDistrictEdit.Destination.Performance.case
-        )
+        ),
+        onDismiss = { store.send(AdminDistrictEdit.Action.DestinationDismissed) }
     ) {
         AdminPerformanceEditView(
             store = it

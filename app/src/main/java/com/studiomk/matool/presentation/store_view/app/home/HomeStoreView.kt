@@ -1,5 +1,7 @@
 package com.studiomk.matool.presentation.store_view.app.home
 
+
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,9 +17,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.studiomk.matool.core.theme.HomeCardColors
 import com.studiomk.ktca.core.store.StoreOf
-import com.studiomk.ktca.ui.FullScreenNavigation
+import com.studiomk.ktca.ui.FullScreen
 import com.studiomk.matool.presentation.store_view.auth.login.LoginStoreView
 import com.studiomk.matool.presentation.store_view.admin.districts.top.AdminDistrictTopStoreView
+import com.studiomk.matool.presentation.store_view.admin.regions.top.AdminRegionTopStoreView
 import com.studiomk.matool.presentation.store_view.app.settings.SettingsStoreView
 import com.studiomk.matool.presentation.store_view.shared.notice_alert.NoticeAlertDialog
 import com.studiomk.matool.presentation.view.navigation.CupertinoNavigationView
@@ -117,7 +120,7 @@ fun HomeStoreView(store: StoreOf<Home.State, Home.Action>) {
         }
     }
     // フルスクリーン遷移
-//        FullScreenNavigation(
+//        FullScreen(
 //            item = store.optionalScope(
 //                statePath = Home.destinationKey + Home.Destination.Route.key,
 //                actionPath = Home.destinationCase + Home.Destination.Route.case
@@ -125,7 +128,7 @@ fun HomeStoreView(store: StoreOf<Home.State, Home.Action>) {
 //        ) {
 //            PublicMapStoreView(store = it)
 //        }
-//        FullScreenNavigation(
+//        FullScreen(
 //            item = store.optionalScope(
 //                statePath = Home.destinationKey + Home.Destination.Info.key,
 //                actionPath = Home.destinationCase + Home.Destination.Info.case
@@ -133,38 +136,43 @@ fun HomeStoreView(store: StoreOf<Home.State, Home.Action>) {
 //        ) {
 //            InfoStoreView(store = it)
 //        }
-    FullScreenNavigation(
+    FullScreen(
         item = store.optionalScope(
             statePath = Home.destinationKey + Home.Destination.Login.key,
             actionPath = Home.destinationCase + Home.Destination.Login.case
-        )
+        ),
+        onDismiss = { store.send(Home.Action.DestinationDismissed) }
     ) {
         LoginStoreView(store = it)
     }
-    FullScreenNavigation(
+    FullScreen(
         item = store.optionalScope(
             statePath = Home.destinationKey + Home.Destination.AdminDistrict.key,
             actionPath = Home.destinationCase + Home.Destination.AdminDistrict.case
-        )
+        ),
+        onDismiss = { store.send(Home.Action.DestinationDismissed) }
     ) {
         AdminDistrictTopStoreView(store = it)
     }
-//        FullScreenNavigation(
-//            item = store.optionalScope(
-//                statePath = Home.destinationKey + Home.Destination.AdminRegion.key,
-//                actionPath = Home.destinationCase + Home.Destination.AdminRegion.case
-//            )
-//        ) {
-//            AdminRegionStoreView(store = it)
-//        }
-    FullScreenNavigation(
+    FullScreen(
+        item = store.optionalScope(
+            statePath = Home.destinationKey + Home.Destination.AdminRegion.key,
+            actionPath = Home.destinationCase + Home.Destination.AdminRegion.case
+        ),
+        onDismiss = { store.send(Home.Action.DestinationDismissed) }
+    ) {
+        AdminRegionTopStoreView(store = it)
+    }
+    FullScreen(
         item = store.optionalScope(
             statePath = Home.destinationKey + Home.Destination.Settings.key,
             actionPath = Home.destinationCase + Home.Destination.Settings.case
-        )
+        ),
+        onDismiss = { store.send(Home.Action.DestinationDismissed) }
     ) {
         SettingsStoreView(store = it)
     }
+    LoadingOverlay(isLoading = state.isLoading)
 
     NoticeAlertDialog(
         store = store.optionalScope(
@@ -172,8 +180,6 @@ fun HomeStoreView(store: StoreOf<Home.State, Home.Action>) {
             actionPath = Home.alertCase
         )
     )
-    LoadingOverlay(isLoading = state.isLoading)
-
     // onAppear
     LaunchedEffect(Unit) {
         store.send(Home.Action.OnAppear)

@@ -1,6 +1,6 @@
 package com.studiomk.matool.core.http
 
-import android.util.Log
+
 import com.studiomk.matool.domain.entities.shared.Result
 import java.net.HttpURLConnection
 import java.net.URL
@@ -53,7 +53,6 @@ class Http private constructor() {
             accessToken: String? = null
         ): Result<ByteArray, Exception> {
             val url = makeUrl(base, path, query)
-            Log.d("MyLog","$method $url")
             val request = HttpRequest(url, method, body, accessToken)
             return executeHttpRequest(request)
         }

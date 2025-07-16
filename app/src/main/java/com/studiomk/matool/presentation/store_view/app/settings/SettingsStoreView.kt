@@ -1,5 +1,7 @@
 package com.studiomk.matool.presentation.store_view.app.settings
 
+
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
-import com.studiomk.matool.core.binding.Binding
+import com.studiomk.ktca.core.util.Binding
 import com.studiomk.ktca.core.store.StoreOf
 import com.studiomk.matool.presentation.store_view.shared.notice_alert.NoticeAlertDialog
 import com.studiomk.matool.presentation.view.others.LoadingOverlay
@@ -118,7 +120,7 @@ fun SettingsStoreView(store: StoreOf<Settings.State, Settings.Action>) {
             )
         ) {
             Text(
-                "強制サインアウト",
+                "強制ログアウト",
                 color = MaterialTheme.colorScheme.onError,
             )
         }

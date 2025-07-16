@@ -3,9 +3,9 @@ package com.studiomk.matool.presentation.view.maps
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.studiomk.matool.core.binding.Binding
+import com.studiomk.ktca.core.util.Binding
 import com.studiomk.matool.domain.entities.shared.Coordinate
-import com.studiomk.matool.presentation.utils.SimpleRegion
+import com.studiomk.matool.presentation.utils.CoordinateRegion
 import com.google.maps.android.compose.*
 import com.google.android.gms.maps.model.*
 
@@ -13,7 +13,7 @@ import com.google.android.gms.maps.model.*
 fun AdminDistrictMapView(
     coordinates: List<Coordinate>?,
     isShownPolygon: Boolean,
-    region: Binding<SimpleRegion?>,
+    region: Binding<CoordinateRegion?>,
     onMapLongPress: (Coordinate) -> Unit
 ) {
     // Region

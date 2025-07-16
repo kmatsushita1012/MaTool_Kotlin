@@ -1,85 +1,64 @@
 package com.studiomk.matool.presentation.utils
 
-import com.studiomk.matool.domain.entities.shared.Coordinate
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
+import android.content.Context
+import android.util.TypedValue
 
-
-
-// region系はComposeMap等の型に合わせて適宜調整してください
-data class SimpleRegion(
-    val center: Coordinate,
-    val latitudeDelta: Double,
-    val longitudeDelta: Double
-){
-    fun toLatLngBounds(): LatLngBounds {
-        val halfLat = latitudeDelta / 2
-        val halfLng = longitudeDelta / 2
-
-        val southWest = LatLng(
-            center.latitude - halfLat,
-            center.longitude - halfLng
-        )
-        val northEast = LatLng(
-            center.latitude + halfLat,
-            center.longitude + halfLng
-        )
-        return LatLngBounds(southWest, northEast)
-    }
-
-    companion object {
-        fun fromLatLngBounds(bounds: LatLngBounds): SimpleRegion {
-            val centerLat = (bounds.northeast.latitude + bounds.southwest.latitude) / 2
-            val centerLng = (bounds.northeast.longitude + bounds.southwest.longitude) / 2
-
-            val latDelta = bounds.northeast.latitude - bounds.southwest.latitude
-            val lngDelta = bounds.northeast.longitude - bounds.southwest.longitude
-
-            return SimpleRegion(
-                center = Coordinate(centerLat, centerLng),
-                latitudeDelta = latDelta,
-                longitudeDelta = lngDelta
-            )
-        }
-    }
-}
-
-fun makeRegion(
-    coordinates: List<Coordinate>,
-    ratio: Double = 1.1,
-    spanDelta: Double = 0.01
-): SimpleRegion? {
-    if (coordinates.isEmpty()) return null
-    val minLat = coordinates.minOf { it.latitude }
-    val maxLat = coordinates.maxOf { it.latitude }
-    val minLon = coordinates.minOf { it.longitude }
-    val maxLon = coordinates.maxOf { it.longitude }
-
-    val center = Coordinate(
-        latitude = (minLat + maxLat) / 2,
-        longitude = (minLon + maxLon) / 2
+import com.google.android.gms.maps.model.*
+/**
+ * 指定した pt 値を px に変換して返す拡張関数
+ *
+ * @param ptSize 変換したいポイント値
+ * @return       ピクセル値 (Float)
+ */
+fun Context.ptToPx(ptSize: Float): Float =
+    TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_PT,
+        ptSize,
+        resources.displayMetrics
     )
-    val latitudeDelta = (maxLat - minLat) * ratio
-    val longitudeDelta = (maxLon - minLon) * ratio
 
-    val finalLatDelta = if (spanDelta > latitudeDelta) spanDelta else latitudeDelta
-    val finalLonDelta = if (spanDelta > longitudeDelta) spanDelta else longitudeDelta
 
-    return SimpleRegion(
-        center = center,
-        latitudeDelta = finalLatDelta,
-        longitudeDelta = finalLonDelta
+
+/**
+ * この Bounds を画像のアスペクト比に収まるよう
+ * 最小限の拡張を行って返す。
+ *
+ * @param targetRatio 画像の width / height
+ */
+fun LatLngBounds.fitToAspect(targetRatio: Double): LatLngBounds {
+    val south = southwest.latitude
+    val north = northeast.latitude
+    val west  = southwest.longitude
+    val east  = northeast.longitude
+
+    val latSpan = north - south
+    val lngSpan = east - west
+
+    // 現在のアスペクト比（幅 / 高さ）
+    val currentRatio = lngSpan / latSpan
+
+    // 拡張後の上下左右
+    var newSouth = south
+    var newNorth = north
+    var newWest  = west
+    var newEast  = east
+
+    if (currentRatio < targetRatio) {
+        // 縦長すぎる → 幅を広げる
+        val newLngSpan = latSpan * targetRatio
+        val extra = (newLngSpan - lngSpan) / 2
+        newWest  -= extra
+        newEast  += extra
+    } else if (currentRatio > targetRatio) {
+        // 横長すぎる → 高さを広げる
+        val newLatSpan = lngSpan / targetRatio
+        val extra = (newLatSpan - latSpan) / 2
+        newSouth -= extra
+        newNorth += extra
+    }
+    return LatLngBounds(
+        LatLng(newSouth, newWest),
+        LatLng(newNorth, newEast)
     )
 }
-
-fun makeRegion(origin: Coordinate?, spanDelta: Double): SimpleRegion? {
-    return origin?.let {
-        SimpleRegion(
-            center = it,
-            latitudeDelta = spanDelta,
-            longitudeDelta = spanDelta
-        )
-    }
-}
-
 

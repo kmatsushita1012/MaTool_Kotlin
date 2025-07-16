@@ -9,7 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.studiomk.matool.core.binding.Binding
+import com.studiomk.ktca.core.util.Binding
 import com.studiomk.matool.domain.entities.shared.SimpleTime
 import com.studiomk.matool.domain.entities.shared.text
 import com.seo4d696b75.compose.material3.picker.NumberPicker

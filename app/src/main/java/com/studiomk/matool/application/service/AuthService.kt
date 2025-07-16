@@ -1,7 +1,7 @@
 package com.studiomk.matool.application.service
 
 import SignInResult
-import android.util.Log
+
 import com.studiomk.matool.domain.contracts.auth.AuthError
 import com.studiomk.matool.domain.contracts.auth.AuthProvider
 import com.studiomk.matool.domain.contracts.auth.SignInResponse
@@ -32,7 +32,6 @@ class AuthService : KoinComponent {
     }
 
     suspend fun signIn(username: String, password: String): SignInResult = mutex.withLock {
-        Log.d("AuthService","signIn")
         val signInResponse = authProvider.signIn(username, password)
         when (signInResponse) {
             is SignInResponse.Failure -> {
@@ -66,7 +65,6 @@ class AuthService : KoinComponent {
     }
 
     suspend fun signOut(): Result<UserRole, AuthError> = mutex.withLock {
-        Log.d("AuthService","signOut")
         val signOutResult = authProvider.signOut()
         if (signOutResult is Result.Failure) {
             return Result.Failure(signOutResult.error)

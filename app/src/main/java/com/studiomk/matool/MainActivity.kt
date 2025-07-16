@@ -1,17 +1,23 @@
 package com.studiomk.matool
 
 import android.os.Bundle
-import android.util.Log
+
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin
 import com.amplifyframework.core.Amplify
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.appupdate.AppUpdateOptions
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
 import com.studiomk.matool.core.theme.AppTheme
 import com.studiomk.matool.di.*
 import com.studiomk.matool.domain.contracts.local_store.LocalStore
@@ -41,10 +47,23 @@ class MainActivity : ComponentActivity(), KoinComponent {
             modules(liveAppModule)
         }
 
+        //Update
+        val appUpdateManager = AppUpdateManagerFactory.create(this@MainActivity)
+        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+            ) {
+                appUpdateManager.startUpdateFlow(
+                    appUpdateInfo,
+                    this, // Activity
+                    AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build()
+                )
+            }
+        }
+
         Amplify.addPlugin(AWSCognitoAuthPlugin())
         Amplify.configure(com.studiomk.matool.App.context)
-
-
 
         setContent {
             AppTheme {
@@ -53,14 +72,16 @@ class MainActivity : ComponentActivity(), KoinComponent {
                 ) {
                     val hasLaunchedBefore = localStore.getBoolean(DefaultValues.HAS_LAUNCHED_BEFORE)
                     var hasSet by remember { mutableStateOf(false) }
+
                     if (hasLaunchedBefore || hasSet) {
                         val store = Store<Home.State, Home.Action>(Home.State(), Home,)
                         HomeStoreView(store)
                     } else {
                         val store = Store(
-                            Onboarding.State(onSet = {
-                                Log.d("MainActivity","onSet")
-                                hasSet = true }
+                            Onboarding.State(
+                                onSet = {
+                                    hasSet = true 
+                                }
                             ),
                             Onboarding
                         )

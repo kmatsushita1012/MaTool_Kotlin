@@ -15,7 +15,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
-import com.studiomk.matool.core.binding.Binding
+import com.studiomk.ktca.core.util.Binding
 import io.github.alexzhirkevich.cupertino.CupertinoHorizontalDivider
 
 @Composable

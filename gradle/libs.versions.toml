@@ -4,7 +4,9 @@ activityCompose = "1.10.1"
 activityComposeVersion = "1.7.0"
 agp = "8.10.1"
 core = "2.11.0"
+coreSplashscreen = "1.0.1"
 googleMaterial = "1.9.0"
+jsoup = "1.17.2"
 koinAndroidxCompose = "3.5.3"
 koinCore = "3.5.3"
 koinAndroid = "3.5.3"
@@ -31,6 +33,7 @@ mapsComposeWidgets = "6.6.0"
 material = "1.10.0"
 activity = "1.8.0"
 constraintlayout = "2.1.4"
+material3Picker = "0.1.5"
 materialVersion = "1.8.2"
 playServicesLocation = "21.3.0"
 playServicesMaps = "19.2.0"
@@ -42,6 +45,7 @@ protoliteWellKnownTypes = "18.0.1"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 aws-auth-cognito = { module = "com.amplifyframework:aws-auth-cognito", version.ref = "core" }
 core = { module = "com.amplifyframework:core", version.ref = "core" }
 cupertino = { module = "io.github.alexzhirkevich:cupertino-adaptive" , version = "0.1.0-alpha04" }
@@ -63,6 +67,7 @@ androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
 androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "ui" }
+jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -88,6 +93,8 @@ androidx-activity = { group = "androidx.activity", name = "activity", version.re
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 androidx-runtime-android = { group = "androidx.compose.runtime", name = "runtime-android", version.ref = "runtimeAndroid" }
 material-v190 = { module = "com.google.android.material:material", version.ref = "googleMaterial" }
+material3-picker = { module = "com.seo4d696b75.compose:material3-picker", version.ref = "material3Picker" }
+play-core = { module = "com.google.android.play:core" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 play-services-maps-v1820 = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMapsVersion" }

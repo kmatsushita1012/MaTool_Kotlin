@@ -1,6 +1,6 @@
 package com.studiomk.matool.presentation.store_view.admin.districts.route.map
 
-import android.util.Log
+
 import com.studiomk.ktca.core.reducer.Reduce
 import com.studiomk.ktca.core.reducer.ReducerOf
 import com.studiomk.ktca.core.effect.Effect
@@ -14,7 +14,7 @@ import com.studiomk.matool.core.others.set
 import com.studiomk.matool.domain.entities.routes.*
 import com.studiomk.matool.domain.entities.shared.Coordinate
 import com.studiomk.matool.domain.entities.shared.Information
-import com.studiomk.matool.presentation.utils.SimpleRegion
+import com.studiomk.matool.presentation.utils.CoordinateRegion
 import com.studiomk.matool.presentation.store_view.admin.districts.route.map.point.AdminPointEdit
 import com.studiomk.matool.presentation.store_view.shared.notice_alert.NoticeAlert
 import com.studiomk.matool.presentation.utils.makeRegion
@@ -42,7 +42,7 @@ object AdminRouteMap : ReducerOf<AdminRouteMap.State, AdminRouteMap.Action> {
         val manager: EditManager<Route>,
         val operation: Operation = Operation.Add,
         val events: List<Information>,
-        val region: SimpleRegion?,
+        val region: CoordinateRegion?,
         @ChildState val destination: DestinationState? = null,
         @ChildState val alert: NoticeAlert.State? = null
     ) {
@@ -68,11 +68,12 @@ object AdminRouteMap : ReducerOf<AdminRouteMap.State, AdminRouteMap.Action> {
         data class MapLongPressed(val coordinate: Coordinate) : Action()
         data class AnnotationTapped(val point: Point) : Action()
         data class PolylineTapped(val segment: Segment) : Action()
-        data class RegionChanged(val region: SimpleRegion?) : Action()
+        data class RegionChanged(val region: CoordinateRegion?) : Action()
         object UndoTapped : Action()
         object RedoTapped : Action()
         object DoneTapped : Action()
         object CancelTapped : Action()
+        object DestinationDismissed : Action()
         @ChildAction data class Alert(val action: NoticeAlert.Action) : Action()
         @ChildAction data class Destination(val action: DestinationAction) : Action()
     }
@@ -130,7 +131,6 @@ object AdminRouteMap : ReducerOf<AdminRouteMap.State, AdminRouteMap.Action> {
                                     val points = it.points.replace(point)
                                     var segments = it.segments
                                     if (index > 0) {
-                                        Log.d("AdminRouteMap", "move1 index: $index")
                                         val segment = Segment(
                                             id = UUID.randomUUID().toString(),
                                             start = it.points[index - 1].coordinate,
@@ -139,7 +139,6 @@ object AdminRouteMap : ReducerOf<AdminRouteMap.State, AdminRouteMap.Action> {
                                         segments = segments.set(index-1, segment)
                                     }
                                     if (index < it.segments.size) {
-                                        Log.d("AdminRouteMap", "move2 index: $index")
                                         val segment = Segment(
                                             id = UUID.randomUUID().toString(),
                                             start = coordinate,
@@ -177,7 +176,6 @@ object AdminRouteMap : ReducerOf<AdminRouteMap.State, AdminRouteMap.Action> {
                                             start= it.points[index-1].coordinate,
                                             end= coordinate
                                         )
-                                        Log.d("AdminRouteMap", "insert1 index: $index")
                                         segments = segments.set(index-1, segment)
                                     }
                                     var segment = Segment (
@@ -227,6 +225,7 @@ object AdminRouteMap : ReducerOf<AdminRouteMap.State, AdminRouteMap.Action> {
                 }
                 is Action.DoneTapped -> state to Effect.none()
                 is Action.CancelTapped -> state to Effect.none()
+                is Action.DestinationDismissed -> state.copy(destination = null) to Effect.none()
                 is Action.Destination -> {
                     when (val destination = action.action) {
                         is DestinationAction.Point -> {
@@ -281,10 +280,10 @@ object AdminRouteMap : ReducerOf<AdminRouteMap.State, AdminRouteMap.Action> {
                                         val index = state.points.firstIndex(pointState.item.id)
                                         val manager = state.manager.apply {
                                             var segments = it.segments
-                                            if (index < it.segments.size) {
+                                            if ( index >= 0 && index < it.segments.size) {
                                                 segments = segments.delete(index)
                                             }
-                                            if (index > 0 && index < it.points.size-1){
+                                            if (index >= 1 && index < it.points.size-1){
                                                 val segment = Segment(
                                                     id = UUID.randomUUID().toString(),
                                                     start = it.points[index-1].coordinate,
@@ -294,7 +293,7 @@ object AdminRouteMap : ReducerOf<AdminRouteMap.State, AdminRouteMap.Action> {
                                                     index-1,
                                                     segment
                                                 )
-                                            }else if(index == it.points.size-1 ){
+                                            }else if(index >= 1 && index == it.points.size-1){
                                                 segments = segments.delete(index-1)
                                             }
                                             val points = it.points.delete(index)
