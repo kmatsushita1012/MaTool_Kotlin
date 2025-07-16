@@ -1,6 +1,7 @@
 package com.studiomk.matool.presentation.store_view.app.home
 
 import SignInResult
+import android.util.Log
 import com.studiomk.matool.application.service.AuthService
 import com.studiomk.ktca.core.reducer.Reduce
 import com.studiomk.ktca.core.reducer.ReducerOf
@@ -98,6 +99,7 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
             reducer = NoticeAlert
         ) +
         Reduce { state, action ->
+            Log.d("Home", "action: $action")
             when (action) {
                 is Action.OnAppear -> {
                     state.copy(isAuthLoading = true) to Effect.run { send ->
@@ -215,8 +217,12 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
                                     when(val result = action.result){
                                         is SignInResult.Success-> {
                                             when (val userRole = result.userRole) {
-                                                is UserRole.Region -> state to Effect.none()
+                                                is UserRole.Region -> state.copy(
+                                                    userRole = userRole,
+                                                    isDestinationLoading = true
+                                                ) to adminRegionEffect(id = userRole.id)
                                                 is UserRole.District -> state.copy(
+                                                    userRole = userRole,
                                                     isDestinationLoading = true
                                                 ) to adminDistrictEffect(id = userRole.id)
                                                 is UserRole.Guest -> state to Effect.none()
@@ -232,9 +238,13 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
                                            when(val result = action.result){
                                                is Result.Success ->  {
                                                    when (val userRole = result.value) {
-                                                       is UserRole.Region -> state to Effect.none()
+                                                       is UserRole.Region -> state.copy(
+                                                           isDestinationLoading = true,
+                                                           userRole = userRole
+                                                       ) to adminRegionEffect(id = userRole.id)
                                                        is UserRole.District -> state.copy(
-                                                           isDestinationLoading = true
+                                                           isDestinationLoading = true,
+                                                           userRole = userRole
                                                        ) to adminDistrictEffect(id = userRole.id)
                                                        is UserRole.Guest -> state to Effect.none()
                                                    }
@@ -255,7 +265,21 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
                                 ) to Effect.none()
                                 is AdminDistrictTop.Action.SignOutReceived ->{
                                     when (val result = action.result) {
-                                        is Result.Success -> state.copy(userRole = UserRole.Guest, destination = null) to Effect.none()
+                                        is Result.Success -> state.copy(userRole = result.value, destination = null) to Effect.none()
+                                        is Result.Failure -> state to Effect.none()
+                                    }
+                                }
+                                else -> state to Effect.none()
+                            }
+                        }
+                        is DestinationAction.AdminRegion -> {
+                            when (val action = action.action) {
+                                is AdminRegionTop.Action.HomeTapped -> state.copy(
+                                    destination = null
+                                ) to Effect.none()
+                                is AdminRegionTop.Action.SignOutReceived ->{
+                                    when (val result = action.result) {
+                                        is Result.Success -> state.copy(userRole = result.value, destination = null) to Effect.none()
                                         is Result.Failure -> state to Effect.none()
                                     }
                                 }

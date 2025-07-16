@@ -20,6 +20,7 @@ import com.studiomk.matool.presentation.store_view.admin.regions.edit.span.Admin
 import com.studiomk.matool.presentation.store_view.admin.shared.information.InformationEdit
 import com.studiomk.matool.presentation.store_view.shared.notice_alert.NoticeAlert
 import com.studiomk.matool.core.others.*
+import com.studiomk.matool.presentation.store_view.shared.confirm_alert.ConfirmAlert
 
 object AdminRegionEdit : ReducerOf<AdminRegionEdit.State, AdminRegionEdit.Action>, KoinComponent {
 
@@ -44,11 +45,14 @@ object AdminRegionEdit : ReducerOf<AdminRegionEdit.State, AdminRegionEdit.Action
         object SaveTapped : Action()
         object CancelTapped : Action()
         data class PutReceived(val result: Result<String, ApiError>) : Action()
+        data class DescriptionChanged(val value: String?): Action()
+        data class PrefectureChanged(val value: String): Action()
+        data class CityChanged(val value: String): Action()
         data class OnSpanEdit(val item: Span) : Action()
         object OnSpanAdd : Action()
         data class OnMilestoneEdit(val item: Information) : Action()
-        data class OnMilestoneDelete(val item: Information) : Action()
         object OnMilestoneAdd : Action()
+        object DestinationDismissed : Action()
         @ChildAction data class Destination(val action: DestinationAction) : Action()
         @ChildAction data class Alert(val action: NoticeAlert.Action) : Action()
     }
@@ -96,6 +100,15 @@ object AdminRegionEdit : ReducerOf<AdminRegionEdit.State, AdminRegionEdit.Action
                         }
                     }
                 }
+                is Action.DescriptionChanged -> {
+                    state.copy(item = state.item.copy(description = action.value)) to Effect.none()
+                }
+                is Action.PrefectureChanged -> {
+                    state.copy(item = state.item.copy(prefecture = action.value)) to Effect.none()
+                }
+                is Action.CityChanged -> {
+                    state.copy(item = state.item.copy(city = action.value)) to Effect.none()
+                }
                 is Action.OnSpanEdit -> {
                     state.copy(
                         destination = DestinationState.Span(
@@ -115,48 +128,48 @@ object AdminRegionEdit : ReducerOf<AdminRegionEdit.State, AdminRegionEdit.Action
                         destination = DestinationState.Milestone(
                             InformationEdit.State(
                                 title = "経由地",
+                                mode = InformationEdit.Mode.Edit,
                                 item = action.item
                             )
                         )
                     ) to Effect.none()
-                }
-                is Action.OnMilestoneDelete -> {
-                    state.item.milestones.removeIf { it.id == action.item.id }
-                    state to Effect.none()
                 }
                 is Action.OnMilestoneAdd -> {
                     state.copy(
                         destination = DestinationState.Milestone(
                             InformationEdit.State(
                                 title = "経由地",
+                                mode = InformationEdit.Mode.Create,
                                 item = Information(id = java.util.UUID.randomUUID().toString())
                             )
                         )
                     ) to Effect.none()
                 }
+                is Action.DestinationDismissed -> state.copy(destination = null) to Effect.none()
                 is Action.Destination -> {
                     when (val destAction = action.action) {
                         is DestinationAction.Span -> when (destAction.action) {
                             is AdminSpanEdit.Action.DoneTapped -> {
                                 if (state.destination is DestinationState.Span) {
-                                    val spanState = (state.destination as DestinationState.Span).state
-                                    var spans = state.item.spans.replace(spanState.span)
+                                    val spanState = state.destination.state
+                                    var spans =
+                                        if(spanState.mode == AdminSpanEdit.Mode.Create)
+                                            state.item.spans.add(spanState.span)
+                                        else
+                                            state.item.spans.replace(spanState.span)
                                     spans = spans.sorted().toList()
                                     state.copy(destination = null, item = state.item.copy(spans = spans)) to Effect.none()
                                 }else {
                                     state.copy(destination = null) to Effect.none()
                                 }
-
                             }
                             is AdminSpanEdit.Action.CancelTapped -> state.copy(destination = null) to Effect.none()
                             is AdminSpanEdit.Action.Alert -> {
                                 when (destAction.action.action) {
-                                    is NoticeAlert.Action.OkTapped -> {
-                                        if (state.destination is DestinationState.Span) {
-                                            val spanState = state.destination.state
-                                            state.item.spans.removeIf { it.id == spanState.id }
-                                        }
-                                        state.copy(destination = null) to Effect.none()
+                                    is ConfirmAlert.Action.OkTapped -> {
+                                        val spanState = (state.destination as DestinationState.Span).state
+                                        val spans = state.item.spans.removeIf { it.id == spanState.id }
+                                        state.copy(destination = null, item = state.item.copy(spans = spans)) to Effect.none()
                                     }
                                     else -> state to Effect.none()
                                 }
@@ -166,12 +179,21 @@ object AdminRegionEdit : ReducerOf<AdminRegionEdit.State, AdminRegionEdit.Action
                         is DestinationAction.Milestone -> when (destAction.action) {
                             is InformationEdit.Action.DoneTapped -> {
                                 if (state.destination is DestinationState.Milestone) {
-                                    val milestoneState = (state.destination as DestinationState.Milestone).state
-                                    state.item.milestones.replace(milestoneState.item)
-                                }
-                                state.copy(destination = null) to Effect.none()
+                                    val milestoneState = state.destination.state
+                                    val milestones =
+                                        if(milestoneState.isEdit)
+                                            state.item.milestones.replace(milestoneState.item)
+                                        else
+                                            state.item.milestones.add(milestoneState.item)
+                                    state.copy(destination = null, item = state.item.copy(milestones = milestones)) to Effect.none()
+                                } else state to Effect.none()
                             }
                             is InformationEdit.Action.CancelTapped -> state.copy(destination = null) to Effect.none()
+                            is InformationEdit.Action.DeleteTapped -> {
+                                val milestoneState = (state.destination as DestinationState.Milestone).state
+                                val milestones = state.item.milestones.removeIf { it.id == milestoneState.item.id }
+                                state.copy(destination = null, item = state.item.copy(milestones = milestones)) to Effect.none()
+                            }
                             else -> state to Effect.none()
                         }
                     }

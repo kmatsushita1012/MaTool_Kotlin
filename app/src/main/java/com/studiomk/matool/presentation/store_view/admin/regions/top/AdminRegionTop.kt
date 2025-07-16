@@ -19,8 +19,8 @@ import com.studiomk.matool.domain.entities.routes.RouteSummary
 import com.studiomk.matool.domain.entities.shared.UserRole
 import com.studiomk.matool.domain.entities.shared.Result
 import com.studiomk.matool.presentation.store_view.admin.regions.edit.AdminRegionEdit
-import com.studiomk.matool.presentation.store_view.admin.regions.detail.list.AdminRegionDistrictList
-import com.studiomk.matool.presentation.store_view.admin.regions.detail.create.AdminRegionDistrictCreate
+import com.studiomk.matool.presentation.store_view.admin.regions.district.list.AdminRegionDistrictList
+import com.studiomk.matool.presentation.store_view.admin.regions.district.create.AdminRegionDistrictCreate
 import com.studiomk.matool.presentation.store_view.shared.notice_alert.NoticeAlert
 
 object AdminRegionTop : ReducerOf<AdminRegionTop.State, AdminRegionTop.Action>, KoinComponent {
@@ -56,6 +56,7 @@ object AdminRegionTop : ReducerOf<AdminRegionTop.State, AdminRegionTop.Action>, 
         object OnCreateDistrict : Action()
         object HomeTapped : Action()
         object SignOutTapped : Action()
+        object DestinationDismissed : Action()
         data class RegionReceived(val result: Result<Region, ApiError>) : Action()
         data class DistrictsReceived(val result: Result<List<PublicDistrict>, ApiError>) : Action()
         data class DistrictInfoPrepared(val district: PublicDistrict, val result: Result<List<RouteSummary>, ApiError>) : Action()
@@ -104,6 +105,7 @@ object AdminRegionTop : ReducerOf<AdminRegionTop.State, AdminRegionTop.Action>, 
                         send(Action.SignOutReceived(result))
                     }
                 }
+                is Action.DestinationDismissed -> state.copy(destination = null) to Effect.none()
                 is Action.RegionReceived -> {
                     when (val result = action.result) {
                         is Result.Success -> state.copy(
