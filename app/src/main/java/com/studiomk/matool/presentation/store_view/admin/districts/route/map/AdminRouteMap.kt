@@ -280,10 +280,10 @@ object AdminRouteMap : ReducerOf<AdminRouteMap.State, AdminRouteMap.Action> {
                                         val index = state.points.firstIndex(pointState.item.id)
                                         val manager = state.manager.apply {
                                             var segments = it.segments
-                                            if (index < it.segments.size) {
+                                            if ( index >= 0 && index < it.segments.size) {
                                                 segments = segments.delete(index)
                                             }
-                                            if (index > 0 && index < it.points.size-1){
+                                            if (index >= 1 && index < it.points.size-1){
                                                 val segment = Segment(
                                                     id = UUID.randomUUID().toString(),
                                                     start = it.points[index-1].coordinate,
@@ -293,7 +293,7 @@ object AdminRouteMap : ReducerOf<AdminRouteMap.State, AdminRouteMap.Action> {
                                                     index-1,
                                                     segment
                                                 )
-                                            }else if(index == it.points.size-1 ){
+                                            }else if(index >= 1 && index == it.points.size-1){
                                                 segments = segments.delete(index-1)
                                             }
                                             val points = it.points.delete(index)
