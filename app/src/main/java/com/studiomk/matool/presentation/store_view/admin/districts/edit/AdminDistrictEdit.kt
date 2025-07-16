@@ -56,6 +56,7 @@ object AdminDistrictEdit : ReducerOf<AdminDistrictEdit.State, AdminDistrictEdit.
         object BaseTapped : Action()
         object AreaTapped : Action()
         object PerformanceAddTapped : Action()
+        object DestinationDismissed : Action()
         data class PerformanceEditTapped(val item: Performance) : Action()
         data class PostReceived(val result: Result<String, ApiError>) : Action()
         @ChildAction data class Destination(val action: DestinationAction) : Action()
@@ -124,6 +125,7 @@ object AdminDistrictEdit : ReducerOf<AdminDistrictEdit.State, AdminDistrictEdit.
                         )
                     ) to Effect.none()
                 }
+                is Action.DestinationDismissed -> state.copy(destination = null) to Effect.none()
                 is Action.PostReceived -> {
                     state.copy(isLoading = false).let { newState ->
                         if (action.result is Result.Failure) {

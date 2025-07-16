@@ -9,7 +9,7 @@ import com.studiomk.matool.domain.entities.routes.text
 import com.studiomk.matool.domain.entities.routes.Point
 import com.studiomk.matool.domain.entities.routes.Segment
 import com.studiomk.matool.presentation.store_view.shared.notice_alert.NoticeAlert
-import com.studiomk.matool.presentation.utils.SimpleRegion
+import com.studiomk.matool.presentation.utils.CoordinateRegion
 import com.studiomk.matool.presentation.utils.makeRegion
 import com.studiomk.ktca.core.annotation.ChildAction
 import com.studiomk.ktca.core.reducer.LetScope
@@ -19,7 +19,9 @@ object AdminRouteExport : ReducerOf<AdminRouteExport.State, AdminRouteExport.Act
 
     data class State(
         val route: PublicRoute,
-        var region: SimpleRegion? = makeRegion(coordinates = route.points.map { it.coordinate }),
+        var region: CoordinateRegion? = makeRegion(
+            coordinates = route.segments.flatMap { it.coordinates },
+        ),
         @ChildState var alert: NoticeAlert.State? = null
     ) {
         val points: List<Point>
@@ -37,7 +39,7 @@ object AdminRouteExport : ReducerOf<AdminRouteExport.State, AdminRouteExport.Act
     sealed class Action {
         object ExportTapped : Action()
         object DismissTapped : Action()
-        data class RegionChanged(val region: SimpleRegion?) : Action()
+        data class RegionChanged(val region: CoordinateRegion?) : Action()
         @ChildAction data class Alert(val action: NoticeAlert.Action) : Action()
     }
 

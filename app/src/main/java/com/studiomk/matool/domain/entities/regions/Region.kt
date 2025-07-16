@@ -13,6 +13,7 @@ data class Region(
     var city: String,
     var base: Coordinate,
     var spans: List<Span> = listOf(),
+    var milestones: List<Information> = listOf(),
     var imagePath: String? = null
 ) {
     companion object

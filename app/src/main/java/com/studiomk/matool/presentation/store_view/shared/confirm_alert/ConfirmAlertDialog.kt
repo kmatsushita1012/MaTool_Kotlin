@@ -1,5 +1,6 @@
 package com.studiomk.matool.presentation.store_view.shared.confirm_alert
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -19,17 +20,32 @@ fun ConfirmAlertDialog(
             message = { Text(state.message) },
             onDismissRequest = { store.send(ConfirmAlert.Action.OkTapped) }
         ){
-            default(
+            cancel(
+                onClick = {
+                    store.send(ConfirmAlert.Action.CancelTapped)
+                }
+            ) {
+                Text(
+                    "キャンセル",
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            destructive(
                 onClick = {
                     store.send(ConfirmAlert.Action.OkTapped)
                 }
             ) {
                 Text(
-                    "OK",
+                    state.buttonText,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.error
                 )
             }
+        }
+        BackHandler(enabled = true) {
+            store.send(ConfirmAlert.Action.CancelTapped)
         }
     }
 }
