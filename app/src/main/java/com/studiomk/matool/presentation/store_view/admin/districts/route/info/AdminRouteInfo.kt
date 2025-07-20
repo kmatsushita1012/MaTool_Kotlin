@@ -1,5 +1,6 @@
 package com.studiomk.matool.presentation.store_view.admin.districts.route.info
 
+import android.util.Log
 import com.studiomk.matool.application.service.AuthService
 import com.studiomk.matool.domain.contracts.api.ApiError
 import com.studiomk.matool.domain.contracts.api.ApiRepository
@@ -97,6 +98,8 @@ object AdminRouteInfo : ReducerOf<AdminRouteInfo.State, AdminRouteInfo.Action>, 
             reducer = AlertDestinationReducer
         ) +
         Reduce { state, action ->
+            Log.d("AdminRouteInfo1", "action: $action")
+            Log.d("AdminRouteInfo1", "action: ${state.route.title}")
             when (action) {
                 is Action.TitleChanged -> state.copy(route = state.route.copy(title = action.title)) to Effect.none()
                 is Action.DateChanged -> state.copy(route = state.route.copy(date = action.date)) to Effect.none()
@@ -235,5 +238,9 @@ object AdminRouteInfo : ReducerOf<AdminRouteInfo.State, AdminRouteInfo.Action>, 
                     }
                 }
             }
+        } +
+        Reduce { state, action ->
+            Log.d("AdminRouteInfo2", "action: ${state.route.title}")
+            state to Effect.none()
         }
 }
