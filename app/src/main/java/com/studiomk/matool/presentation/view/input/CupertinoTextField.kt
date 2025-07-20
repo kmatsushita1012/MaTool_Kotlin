@@ -12,10 +12,12 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
@@ -35,9 +37,11 @@ fun CupertinoTextField(
     enabled: Boolean = true,
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    trailing: (@Composable () -> Unit)? = null, // ← 追加
+    trailing: (@Composable () -> Unit)? = null,
 ) {
     var isFocused by remember { mutableStateOf(false) }
+
+    var internalText by rememberSaveable { mutableStateOf(value) }
 
     Box(
         modifier = modifier
@@ -53,8 +57,11 @@ fun CupertinoTextField(
         ) {
             Box(modifier = Modifier.weight(1f)) {
                 BasicTextField(
-                    value = value,
-                    onValueChange = onValueChange,
+                    value = internalText,
+                    onValueChange = {
+                        internalText = it
+                        onValueChange(it)
+                    },
                     enabled = enabled,
                     textStyle = textStyle.copy(
                         color = if (enabled) Color.Black else Color.Gray,
@@ -63,7 +70,9 @@ fun CupertinoTextField(
                     singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .onFocusChanged { isFocused = it.isFocused },
+                        .onFocusChanged {
+                            isFocused = it.isFocused
+                        },
                     visualTransformation = visualTransformation,
                     decorationBox = { innerTextField ->
                         if (value.isEmpty()) {
@@ -101,6 +110,8 @@ fun CupertinoBorderedTextField(
 ) {
     var isFocused by remember { mutableStateOf(false) }
 
+    var internalText by rememberSaveable { mutableStateOf(value) }
+
     val borderColor = if (isFocused) Color(0xFFB0BEC5) else Color(0xFFCED4DA)
 
     Box(
@@ -117,8 +128,11 @@ fun CupertinoBorderedTextField(
         contentAlignment = Alignment.CenterStart
     ) {
         BasicTextField(
-            value = value,
-            onValueChange = onValueChange,
+            value = internalText,
+            onValueChange = {
+                internalText = it
+                onValueChange(it)
+            },
             enabled = enabled,
             textStyle = textStyle.copy(
                 color = if (enabled) Color.Black else Color.Gray,
