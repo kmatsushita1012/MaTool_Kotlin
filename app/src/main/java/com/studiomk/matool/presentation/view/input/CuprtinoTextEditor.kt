@@ -11,9 +11,12 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
@@ -33,6 +36,8 @@ fun CupertinoTextEditor(
 ) {
     var isFocused by remember { mutableStateOf(false) }
 
+    var internalText by rememberSaveable { mutableStateOf(value) }
+
     val shape = RoundedCornerShape(8.dp)
 
     Box(
@@ -42,8 +47,11 @@ fun CupertinoTextEditor(
             .onFocusChanged { isFocused = it.isFocused }
     ) {
         BasicTextField(
-            value = value,
-            onValueChange = onValueChange,
+            value = internalText,
+            onValueChange = {
+                internalText = it
+                onValueChange(it)
+            },
             enabled = enabled,
             textStyle = textStyle.copy(
                 color = if (enabled) Color.Black else Color.Gray
