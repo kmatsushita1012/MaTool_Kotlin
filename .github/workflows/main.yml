@@ -1,0 +1,38 @@
+name: Build
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main", "release"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: set up JDK 21
+        uses: actions/setup-java@v1
+        with:
+          java-version: 21
+
+      - name: Create secrets directory
+        run: |
+          mkdir secrets
+
+      - name: Decode Keystore
+        run: echo '${{ secrets.ENCODED_RELEASE_KEYSTORE }}' | base64 --decode > playstore.keystore
+
+      - name: Copy Keystore
+        run: |
+          cp playstore.keystore secrets/playstore.keystore
+
+      - name: Generate AAB
+        run: ./gradlew :app:bundleRelease
+        env:
+          KEYSTORE_ALIAS: ${{ secrets.RELEASE_KEYSTORE_ALIAS }}
+          KEYSTORE_ALIAS_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_ALIAS_PASSWORD }}
+          KEYSTORE_STORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_STORE_PASSWORD }}
+          VERSION_CODE: ${{ github.run_number }}

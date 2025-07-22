@@ -6,11 +6,13 @@ if (localPropertiesFile.exists()) {
     localProperties.load(localPropertiesFile.inputStream())
 }
 
+val envVersionCode = System.getenv("VERSION_CODE")?.toIntOrNull()
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
-    id("com.google.devtools.ksp") version "2.0.21-1.0.27"
+    id("com.google.devtools.ksp") version "2.0.21-1.0.28"
     kotlin("plugin.serialization") version "2.0.21"
 //    kotlin("plugin.parcelize") version "2.0.21"
 }
@@ -24,7 +26,7 @@ android {
         minSdk = 26
         targetSdk = 35
 
-        versionCode = 13
+        versionCode = (envVersionCode ?: 0) + 13
         versionName = "2.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -35,10 +37,10 @@ android {
     }
     signingConfigs {
         create("release") {
-            storeFile = file(project.property("KEYSTORE_FILE") as String)
-            storePassword = project.property("KEYSTORE_PASSWORD") as String
-            keyAlias = project.property("KEY_ALIAS") as String
-            keyPassword = project.property("KEY_PASSWORD") as String
+            storeFile = file(localProperties.getProperty("KEYSTORE_FILE") ?: "../secrets/playstore.keystore")
+            storePassword = localProperties.getProperty("KEYSTORE_PASSWORD") ?: System.getenv("KEYSTORE_STORE_PASSWORD")
+            keyAlias = localProperties.getProperty("KEY_ALIAS") ?: System.getenv("KEYSTORE_ALIAS")
+            keyPassword = localProperties.getProperty("KEY_PASSWORD") ?: System.getenv("KEYSTORE_ALIAS_PASSWORD")
         }
     }
 
@@ -53,12 +55,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
 
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "21"
     }
     //JetPack
     buildFeatures {
