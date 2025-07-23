@@ -53,6 +53,9 @@ jobs:
             }
           }
           EOF
+          ls
+          ls app/src/main
+          ls app/src/main/res/raw
 
       - name: Set VERSION_CODE with offset and log it
         run: |
