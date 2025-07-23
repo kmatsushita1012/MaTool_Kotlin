@@ -34,22 +34,22 @@ jobs:
           {
             "aws_project_region": "ap-northeast-1",
             "auth": {
-                "plugins": {
-                  "awsCognitoAuthPlugin": {
-                        "CognitoUserPool": {
-                          "Default": {
-                              "PoolId": "${{ secrets.AWS_AMPLIFY_COGNITO_POOL_ID }}",
-                              "AppClientId": "${{ secrets.AWS_AMPLIFY_COGNITO_APP_CLIENT_ID }}",
-                              "Region": "${{ secrets.AWS_AMPLIFY_COGNITO_REGION }}"
-                          }
-                        },
-                        "Auth": {
-                          "Default": {
-                              "authenticationFlowType": "USER_SRP_AUTH"
-                          }
-                      }
+              "plugins": {
+                "awsCognitoAuthPlugin": {
+                  "CognitoUserPool": {
+                    "Default": {
+                      "PoolId": "${{ secrets.AWS_AMPLIFY_COGNITO_POOL_ID }}",
+                      "AppClientId": "${{ secrets.AWS_AMPLIFY_COGNITO_APP_CLIENT_ID }}",
+                      "Region": "${{ secrets.AWS_AMPLIFY_COGNITO_REGION }}"
+                    }
+                  },
+                  "Auth": {
+                    "Default": {
+                      "authenticationFlowType": "USER_SRP_AUTH"
+                    }
                   }
                 }
+              }
             }
           }
           EOF
