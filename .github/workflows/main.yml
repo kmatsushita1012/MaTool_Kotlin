@@ -56,6 +56,39 @@ jobs:
         run: |
           cp playstore.keystore secrets/playstore.keystore
 
+      - name: Create amplifyconfiguration.json (Android)
+        run: |
+          mkdir -p app/src/main/res/raw
+          cat <<EOF > app/src/main/res/raw/amplifyconfiguration.json
+          {
+            "aws_project_region": "ap-northeast-1",
+            "auth": {
+                "plugins": {
+                  "awsCognitoAuthPlugin": {
+                        "CognitoUserPool": {
+                          "Default": {
+                              "PoolId": "${{ secrets.AWS_AMPLIFY_COGNITO_POOL_ID }}",
+                              "AppClientId": "${{ secrets.AWS_AMPLIFY_COGNITO_APP_CLIENT_ID }}",
+                              "Region": "${{ secrets.AWS_AMPLIFY_COGNITO_REGION }}"
+                          }
+                        },
+                        "Auth": {
+                          "Default": {
+                              "authenticationFlowType": "USER_SRP_AUTH"
+                          }
+                      }
+                  }
+                }
+            }
+          }
+          EOF
+
+      - name: Set VERSION_CODE with offset and log it
+        run: |
+          VERSION_CODE=$(( ${{ github.run_number }} + 13 ))
+          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
+          echo "VERSION_CODE is set to: $VERSION_CODE"
+
       - name: Generate AAB
         run: ./gradlew :app:bundleRelease
         env:

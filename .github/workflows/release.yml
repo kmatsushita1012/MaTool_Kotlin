@@ -53,6 +53,12 @@ jobs:
             }
           }
           EOF
+          
+      - name: Set VERSION_CODE with offset and log it
+        run: |
+          VERSION_CODE=$(( ${{ github.run_number }} + 13 ))
+          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
+          echo "VERSION_CODE is set to: $VERSION_CODE"
 
       - name: Generate AAB
         run: ./gradlew :app:bundleRelease
