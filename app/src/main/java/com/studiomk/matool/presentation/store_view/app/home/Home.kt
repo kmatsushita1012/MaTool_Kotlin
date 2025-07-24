@@ -64,7 +64,7 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
 
     sealed class Action {
         object OnAppear : Action()
-        object RouteTapped : Action()
+        object MapTapped : Action()
         object InfoTapped : Action()
         object AdminTapped : Action()
         object SettingsTapped : Action()
@@ -114,7 +114,7 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
                         isAuthLoading = false
                     ) to Effect.none()
                 }
-                is Action.RouteTapped -> {
+                is Action.MapTapped -> {
                     val regionId =  localStore.getString(DefaultValues.DEFAULT_REGION)!!
                     val districtId = localStore.getString(DefaultValues.DEFAULT_DISTRICT)!!
                     state.copy(destination =
