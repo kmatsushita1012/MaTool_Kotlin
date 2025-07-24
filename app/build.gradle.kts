@@ -26,8 +26,8 @@ android {
         minSdk = 26
         targetSdk = 35
 
-        versionCode = (envVersionCode ?: 0) + 13
-        versionName = "2.0.2"
+        versionCode = envVersionCode ?: 1
+        versionName = "2.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         defaultConfig {
@@ -37,10 +37,10 @@ android {
     }
     signingConfigs {
         create("release") {
-            storeFile = file(localProperties.getProperty("KEYSTORE_FILE") ?: "../secrets/playstore.keystore")
-            storePassword = localProperties.getProperty("KEYSTORE_PASSWORD") ?: System.getenv("KEYSTORE_STORE_PASSWORD")
-            keyAlias = localProperties.getProperty("KEY_ALIAS") ?: System.getenv("KEYSTORE_ALIAS")
-            keyPassword = localProperties.getProperty("KEY_PASSWORD") ?: System.getenv("KEYSTORE_ALIAS_PASSWORD")
+            storeFile = file(localProperties.getProperty("KEYSTORE_FILE"))
+            storePassword = localProperties.getProperty("KEYSTORE_PASSWORD")
+            keyAlias = localProperties.getProperty("KEY_ALIAS")
+            keyPassword = localProperties.getProperty("KEY_PASSWORD")
         }
     }
 

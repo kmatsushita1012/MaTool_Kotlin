@@ -48,22 +48,22 @@ class MainActivity : ComponentActivity(), KoinComponent {
         }
 
         //Update
-        val appUpdateManager = AppUpdateManagerFactory.create(this@MainActivity)
-        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
-        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
-            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
-            ) {
-                appUpdateManager.startUpdateFlow(
-                    appUpdateInfo,
-                    this, // Activity
-                    AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build()
-                )
-            }
-        }
+//        val appUpdateManager = AppUpdateManagerFactory.create(this@MainActivity)
+//        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+//        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
+//            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+//                && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+//            ) {
+//                appUpdateManager.startUpdateFlow(
+//                    appUpdateInfo,
+//                    this, // Activity
+//                    AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build()
+//                )
+//            }
+//        }
 
-        Amplify.addPlugin(AWSCognitoAuthPlugin())
-        Amplify.configure(com.studiomk.matool.App.context)
+         Amplify.addPlugin(AWSCognitoAuthPlugin())
+         Amplify.configure(com.studiomk.matool.App.context)
 
         setContent {
             AppTheme {
