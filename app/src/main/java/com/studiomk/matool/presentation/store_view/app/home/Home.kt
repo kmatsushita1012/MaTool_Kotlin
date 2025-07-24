@@ -20,6 +20,7 @@ import com.studiomk.matool.domain.entities.routes.RouteSummary
 import com.studiomk.matool.domain.entities.regions.Region
 import com.studiomk.matool.domain.entities.shared.UserRole
 import com.studiomk.matool.domain.entities.shared.Result
+import com.studiomk.matool.presentation.store_view.pub.map.root.PublicMap
 import com.studiomk.matool.presentation.store_view.admin.districts.top.AdminDistrictTop
 import com.studiomk.matool.presentation.store_view.admin.regions.top.AdminRegionTop
 import com.studiomk.matool.presentation.store_view.shared.notice_alert.NoticeAlert
@@ -36,8 +37,8 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
     private val localStore: LocalStore by inject()
 
     sealed class Destination {
-//        @ChildFeature(PublicMap::class)
-//        object Route : Destination()
+        @ChildFeature(PublicMap::class)
+        object Map : Destination()
         @ChildFeature(com.studiomk.matool.presentation.store_view.pub.info.Info::class)
         object Info : Destination()
         @ChildFeature(com.studiomk.matool.presentation.store_view.auth.login.Login::class)
@@ -114,8 +115,17 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
                     ) to Effect.none()
                 }
                 is Action.RouteTapped -> {
-//                    state.copy(destination = DestinationState.Route) to Effect.none()
-                    state to Effect.none()
+                    val regionId =  localStore.getString(DefaultValues.DEFAULT_REGION)!!
+                    val districtId = localStore.getString(DefaultValues.DEFAULT_DISTRICT)!!
+                    state.copy(destination =
+                        DestinationState.Map(
+                            PublicMap.State(
+                                regionId = regionId,
+                                tabItems = listOf(PublicMap.Tab.Location(), PublicMap.Tab.Route(districtId,"name")),
+                                selectedTab = PublicMap.Tab.Location(),
+                            )
+                        )
+                    ) to Effect.none()
                 }
                 is Action.InfoTapped -> {
 //                    state.destination = DestinationState.Info(Info.State())
@@ -209,6 +219,12 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
                 //TODO
                 is Action.Destination -> {
                     when(val action = action.action){
+                        is DestinationAction.Map -> {
+                            when(val action = action.action){
+                                is PublicMap.Action.DismissTapped -> state.copy(destination = null) to Effect.none()
+                                else -> state to Effect.none()
+                            }
+                        }
                         is DestinationAction.Login->{
                             when(val action = action.action){
                                 is Login.Action.HomeTapped->

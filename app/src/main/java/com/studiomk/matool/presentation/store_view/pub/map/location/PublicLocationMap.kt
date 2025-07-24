@@ -8,6 +8,7 @@ import com.studiomk.matool.application.service.AuthService
 import com.studiomk.matool.domain.contracts.api.ApiError
 import com.studiomk.matool.domain.contracts.api.ApiRepository
 import com.studiomk.matool.domain.entities.locations.PublicLocation
+import com.studiomk.matool.presentation.utils.CoordinateRegion
 import org.koin.core.component.inject
 import kotlin.getValue
 import org.koin.core.component.KoinComponent
@@ -18,6 +19,7 @@ object PublicLocationMap: ReducerOf<PublicLocationMap.State, PublicLocationMap.A
     data class State(
         val regionId: String,
         val locations: List<PublicLocation> = listOf(),
+        val coordinateRegion: CoordinateRegion? = null,
     )
 
     sealed class Action {

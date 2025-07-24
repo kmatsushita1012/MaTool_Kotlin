@@ -31,7 +31,7 @@ import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
 @Composable
 fun HomeStoreView(store: StoreOf<Home.State, Home.Action>) {
     val state by store.state.collectAsState()
-    CupertinoNavigationView() {
+    CupertinoNavigationView {
         Column(
             modifier = Modifier
                 .fillMaxSize()

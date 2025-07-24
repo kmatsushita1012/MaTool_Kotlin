@@ -15,21 +15,23 @@ object PublicMap: ReducerOf<PublicMap.State, PublicMap.Action> {
 
     sealed class Tab {
         class Location(): Tab()
-        data class Route(val districtId: String): Tab()
+        data class Route(val id: String, val name: String): Tab()
     }
 
     sealed class Destination {
         @ChildFeature(PublicLocationMap::class)
-        data class Location(val regionId: String): Destination()
+        object Location: Destination()
         @ChildFeature(PublicRouteMap::class)
-        data class Route(val districtId: String): Destination()
+        object Route: Destination()
     }
 
     data class State(
         val regionId: String,
-        val types: List<Tab>,
+        val tabItems: List<Tab>,
+        val selectedTab: Tab?,
         @ChildState val destination: DestinationState? = null
     )
+
     sealed class Action {
         class OnAppear(): Action()
         data class TabSelected(val value: Tab): Action()
@@ -42,14 +44,14 @@ object PublicMap: ReducerOf<PublicMap.State, PublicMap.Action> {
             statePath = destinationKey,
             actionPath = destinationCase,
             reducer = DestinationReducer
-        )+
+        ) +
         Reduce { state, action ->
             when(action){
                 is Action.OnAppear -> state to Effect.none()
                 is Action.TabSelected -> {
                     state.copy(destination = when(action.value){
                         is Tab.Location -> DestinationState.Location(PublicLocationMap.State(state.regionId))
-                        is Tab.Route -> DestinationState.Route(PublicRouteMap.State(action.value.districtId))
+                        is Tab.Route -> DestinationState.Route(PublicRouteMap.State(action.value.id))
                     }) to Effect.none()
                 }
                 is Action.DismissTapped -> state to Effect.none()
@@ -59,3 +61,9 @@ object PublicMap: ReducerOf<PublicMap.State, PublicMap.Action> {
             }
         }
 }
+
+val PublicMap.Tab.text: String
+    get() = when (this) {
+        is PublicMap.Tab.Location -> "全町"
+        is PublicMap.Tab.Route -> name
+    }
