@@ -21,11 +21,11 @@ jobs:
 
       - name: Decode keystore
         run: |
-          echo "${{ secrets.ENCODED_RELEASE_KEYSTORE }}" | base64 -d > keystore.jks
+          echo "${{ secrets.ENCODED_RELEASE_KEYSTORE }}" | base64 -d > key.jks
 
       - name: Set up gradle.properties
         run: |
-          echo "KEYSTORE_FILE=key.jks" >> local.properties
+          echo "KEYSTORE_FILE=./key.jks" >> local.properties
           echo "KEYSTORE_PASSWORD=${{ secrets.RELEASE_KEYSTORE_STORE_PASSWORD }}" >> local.properties
           echo "KEY_ALIAS=${{ secrets.RELEASE_KEYSTORE_ALIAS }}" >> local.properties
           echo "KEY_PASSWORD=${{ secrets.RELEASE_KEYSTORE_ALIAS_PASSWORD }}" >> local.properties
