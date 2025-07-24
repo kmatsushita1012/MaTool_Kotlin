@@ -62,8 +62,8 @@ class MainActivity : ComponentActivity(), KoinComponent {
             }
         }
 
-        Amplify.addPlugin(AWSCognitoAuthPlugin())
-        Amplify.configure(com.studiomk.matool.App.context)
+        // Amplify.addPlugin(AWSCognitoAuthPlugin())
+        // Amplify.configure(com.studiomk.matool.App.context)
 
         setContent {
             AppTheme {
