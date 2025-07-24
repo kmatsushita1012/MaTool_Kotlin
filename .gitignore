@@ -18,7 +18,6 @@ local.properties
 build/
 dist/
 node_modules/
-amplifyconfiguration.json
 .secret-*
 **.sample
 #amplify-do-not-edit-end
