@@ -21,7 +21,7 @@ jobs:
 
       - name: Decode keystore
         run: |
-          echo "${{ secrets.ENCODED_RELEASE_KEYSTORE }}" | base64 -d > key.jks
+          echo "${{ secrets.ENCODED_RELEASE_KEYSTORE }}" | base64 -d > ./app/key.jks
 
       - name: Set up gradle.properties
         run: |
