@@ -1,16 +1,20 @@
 package com.studiomk.matool.presentation.store_view.pub.map.route
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.studiomk.ktca.core.store.StoreOf
 import com.studiomk.ktca.core.util.Binding
+import com.studiomk.matool.domain.entities.routes.text
 import com.studiomk.matool.presentation.view.items.ToggleOptionItem
 import com.studiomk.matool.presentation.view.items.ToggleSelectedItem
 import com.studiomk.matool.presentation.view.maps.PublicRouteMapView
@@ -20,9 +24,13 @@ import com.studiomk.matool.presentation.view.maps.PublicRouteMapView
 fun PublicRouteMapStoreView(store: StoreOf<PublicRouteMap.State, PublicRouteMap.Action>){
     val state by store.state.collectAsState()
 
+    LaunchedEffect(Unit) {
+        store.send(PublicRouteMap.Action.OnAppear())
+    }
+
     Box(
         modifier = Modifier.fillMaxSize()
-    ){
+    ) {
         PublicRouteMapView(
             points = state.points,
             segments = state.segments,
@@ -30,19 +38,31 @@ fun PublicRouteMapStoreView(store: StoreOf<PublicRouteMap.State, PublicRouteMap.
             region = Binding(
                 { state.coordinateRegion },
                 { }
-            )
-        )
-        ToggleMenu(
-            items = state.items,
-            selection = Binding(
-                { state.selectedItem },
-                { store.send(PublicRouteMap.Action.ItemSelected(it)) }
             ),
-            isToggled = Binding(
-                { state.isMenuPresented },
-                { store.send(PublicRouteMap.Action.ToggleChanged(it)) }
-            )
         )
+        if (state.isMenuPresented == true) {
+            Box(
+                modifier = Modifier.fillMaxSize()
+                    .clickable {
+                        store.send(PublicRouteMap.Action.ToggleChanged(false))
+                    }
+            )
+        }
+        state.isMenuPresented?.let {
+            ToggleMenu(
+                items = state.items,
+                selection = Binding(
+                    { state.selectedItem },
+                    { store.send(PublicRouteMap.Action.ItemSelected(it)) }
+                ),
+                isToggled = Binding(
+                    { it },
+                    { store.send(PublicRouteMap.Action.ToggleChanged(it)) }
+                ),
+                itemLabel = { it.text("m/d T") },
+                modifier = Modifier.padding(all = 16.dp)
+            )
+        }
     }
 }
 
@@ -56,6 +76,7 @@ fun <T> ToggleMenu(
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier
     ) {
         val selectedItem = selection.value
         ToggleSelectedItem(

@@ -29,7 +29,11 @@ object PublicMap: ReducerOf<PublicMap.State, PublicMap.Action> {
         val regionId: String,
         val tabItems: List<Tab>,
         val selectedTab: Tab?,
-        @ChildState val destination: DestinationState? = null
+        @ChildState val destination: DestinationState? = when(selectedTab){
+            is Tab.Location -> DestinationState.Location(PublicLocationMap.State(regionId))
+            is Tab.Route -> DestinationState.Route(PublicRouteMap.State(selectedTab.id))
+            null -> null
+        }
     )
 
     sealed class Action {
@@ -49,10 +53,14 @@ object PublicMap: ReducerOf<PublicMap.State, PublicMap.Action> {
             when(action){
                 is Action.OnAppear -> state to Effect.none()
                 is Action.TabSelected -> {
-                    state.copy(destination = when(action.value){
-                        is Tab.Location -> DestinationState.Location(PublicLocationMap.State(state.regionId))
-                        is Tab.Route -> DestinationState.Route(PublicRouteMap.State(action.value.id))
-                    }) to Effect.none()
+                    val selected = action.value
+                    state.copy(
+                        selectedTab = selected,
+                        destination = when(selected){
+                            is Tab.Location -> DestinationState.Location(PublicLocationMap.State(state.regionId))
+                            is Tab.Route -> DestinationState.Route(PublicRouteMap.State(action.value.id))
+                        }
+                    ) to Effect.none()
                 }
                 is Action.DismissTapped -> state to Effect.none()
                 is Action.Destination -> {

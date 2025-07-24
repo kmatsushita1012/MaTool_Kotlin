@@ -13,6 +13,7 @@ import com.studiomk.matool.domain.entities.routes.PublicRoute
 import com.studiomk.matool.domain.entities.routes.RouteSummary
 import com.studiomk.matool.domain.entities.routes.Segment
 import com.studiomk.matool.presentation.utils.CoordinateRegion
+import com.studiomk.matool.presentation.utils.makeRegion
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -25,10 +26,10 @@ object PublicRouteMap: ReducerOf<PublicRouteMap.State, PublicRouteMap.Action>, K
         val selectedItem: RouteSummary? = null,
         val selectedRoute: PublicRoute? = null,
         val location: PublicLocation? = null,
-        val isMenuPresented: Boolean = false,
-        val coordinateRegion: CoordinateRegion? = null,
+        val isMenuPresented: Boolean? = null,
+        val coordinateRegion: CoordinateRegion? = selectedRoute?.let{ makeRegion(it.points.map { it.coordinate }) },
     ){
-        val points:List<Point>? = selectedRoute?.points
+        val points:List<Point>? = selectedRoute?.let { filterPoints(it) }
         val segments:List<Segment>? = selectedRoute?.segments
     }
 
@@ -61,14 +62,14 @@ object PublicRouteMap: ReducerOf<PublicRouteMap.State, PublicRouteMap.Action>, K
                     )
                 }
                 is Action.ToggleChanged -> {
-                    state.copy(isMenuPresented = true) to Effect.none()
+                    state.copy(isMenuPresented = action.value) to Effect.none()
                 }
                 is Action.ItemSelected -> {
                     state.copy(
                         isMenuPresented = false,
                         selectedItem = action.value
                     ) to Effect.run { send ->
-                        state.selectedItem?.let{
+                        action.value?.let{
                             val result = apiRepository.getRoute(it.id, authService.getAccessToken())
                             send(Action.RouteReceived(result))
                         }
@@ -87,9 +88,12 @@ object PublicRouteMap: ReducerOf<PublicRouteMap.State, PublicRouteMap.Action>, K
                 is Action.RouteReceived -> {
                     when (val result = action.result) {
                         is Result.Success -> {
-                            state.copy(selectedRoute = result.value) to Effect.none()
+                            state.copy(
+                                selectedItem = RouteSummary(result.value),
+                                selectedRoute = result.value,
+                                isMenuPresented = false
+                            ) to Effect.none()
                         }
-
                         is Result.Failure -> {
                             state to Effect.none()
                         }
@@ -97,4 +101,27 @@ object PublicRouteMap: ReducerOf<PublicRouteMap.State, PublicRouteMap.Action>, K
                 }
             }
         }
+
+    fun filterPoints(route: PublicRoute): List<Point> {
+        val newPoints = mutableListOf<Point>()
+        val points = route.points
+        if (points.firstOrNull()?.title == null) {
+            val first = points.first()
+            val tempFirst = first.copy(
+                title = "出発",
+                time = route.start
+            )
+            newPoints.add(tempFirst)
+        }
+        newPoints.addAll(points.filter { it.title != null })
+        if (points.size >= 2 && points.lastOrNull()?.title == null) {
+            val last = points.last()
+            val tempLast = last.copy(
+                title = "到着",
+                time = route.goal
+            )
+            newPoints.add(tempLast)
+        }
+        return newPoints
+    }
 }

@@ -20,15 +20,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.studiomk.matool.presentation.store_view.app.home.Home
-import com.studiomk.matool.presentation.store_view.app.home.destinationKey
-import com.studiomk.matool.presentation.store_view.app.home.key
 import com.studiomk.matool.presentation.store_view.pub.map.location.PublicLocationStoreView
 import com.studiomk.matool.presentation.store_view.pub.map.route.PublicRouteMapStoreView
 import com.studiomk.matool.presentation.view.navigation.CupertinoNavigationView
 import com.studiomk.matool.presentation.view.navigation.CupertinoToolBar
 import com.studiomk.matool.presentation.view.navigation.CupertinoToolbarLeadingButton
-import com.studiomk.matool.presentation.view.others.LoadingOverlay
 import io.github.alexzhirkevich.cupertino.icons.CupertinoIcons
 import io.github.alexzhirkevich.cupertino.icons.outlined.House
 
@@ -73,9 +69,11 @@ fun PublicMapStoreView(store: StoreOf<PublicMap.State, PublicMap.Action>){
                 statePath = PublicMap.destinationKey + PublicMap.Destination.Route.key,
                 actionPath = PublicMap.destinationCase + PublicMap.Destination.Route.case
             )?.let {
-                PublicRouteMapStoreView(
-                    store = it
-                )
+                key(state.selectedTab){
+                    PublicRouteMapStoreView(
+                        store = it
+                    )
+                }
             }
         }
     }

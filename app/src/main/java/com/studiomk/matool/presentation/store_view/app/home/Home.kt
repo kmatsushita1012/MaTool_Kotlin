@@ -70,6 +70,9 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
         object SettingsTapped : Action()
         object DestinationDismissed: Action()
         data class AuthInitializeReceived(val result: Result<UserRole, AuthError>) : Action()
+        data class MapPrepared(
+            val districtsResult: Result<List<PublicDistrict>, ApiError>
+        ) : Action()
         data class AdminDistrictPrepared(
             val districtResult: Result<PublicDistrict, ApiError>,
             val routesResult: Result<List<RouteSummary>, ApiError>
@@ -100,7 +103,6 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
             reducer = NoticeAlert
         ) +
         Reduce { state, action ->
-            Log.d("Home", "action: $action")
             when (action) {
                 is Action.OnAppear -> {
                     state.copy(isAuthLoading = true) to Effect.run { send ->
@@ -116,16 +118,12 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
                 }
                 is Action.MapTapped -> {
                     val regionId =  localStore.getString(DefaultValues.DEFAULT_REGION)!!
-                    val districtId = localStore.getString(DefaultValues.DEFAULT_DISTRICT)!!
-                    state.copy(destination =
-                        DestinationState.Map(
-                            PublicMap.State(
-                                regionId = regionId,
-                                tabItems = listOf(PublicMap.Tab.Location(), PublicMap.Tab.Route(districtId,"name")),
-                                selectedTab = PublicMap.Tab.Location(),
-                            )
-                        )
-                    ) to Effect.none()
+                    state.copy(
+                        isDestinationLoading = true,
+                    ) to Effect.run{ send ->
+                        val result = apiRepository.getDistricts(regionId)
+                        send(Action.MapPrepared(result))
+                    }
                 }
                 is Action.InfoTapped -> {
 //                    state.destination = DestinationState.Info(Info.State())
@@ -151,6 +149,32 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
                     val regionId = localStore.getString(DefaultValues.DEFAULT_REGION)
                     val districtId = localStore.getString(DefaultValues.DEFAULT_DISTRICT)
                     state.copy(isDestinationLoading = true) to settingsEffect(regionId, districtId)
+                }
+                is Action.MapPrepared -> {
+                    when (val result = action.districtsResult) {
+                        is Result.Success -> {
+                            val routeTabs = result.value.map { PublicMap.Tab.Route(it.id, it.name) }
+                            val tabs = routeTabs + PublicMap.Tab.Location()
+                            val defaultDistrict = localStore.getString(DefaultValues.DEFAULT_DISTRICT)
+                            val selectedTab = routeTabs.find { it.id == defaultDistrict } ?: PublicMap.Tab.Location()
+                            state.copy(
+                                isDestinationLoading = false,
+                                destination = DestinationState.Map(
+                                    PublicMap.State(
+                                        regionId = localStore.getString(DefaultValues.DEFAULT_REGION)!!,
+                                        tabItems = tabs,
+                                        selectedTab =selectedTab
+                                    )
+                                )
+                            ) to Effect.none()
+                        }
+                        is Result.Failure -> {
+                            state.copy(
+                                isDestinationLoading = false,
+                                alert = NoticeAlert.State.error("情報の取得に失敗しました")
+                            ) to Effect.none()
+                        }
+                    }
                 }
                 is Action.AdminDistrictPrepared -> {
                     val (districtResult, routesResult) = action
