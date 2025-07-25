@@ -53,9 +53,7 @@ fun PublicRouteMapView(
                 CupertinoMarker(
                     coordinate = point.coordinate.latLng,
                     label = buildString {
-                        append("${i + 1}")
-                        point.title?.let { append(":$it") }
-                        point.time?.text?.let { append(it) }
+                        point.title?.let { append(it) }
                     },
                 )
             }

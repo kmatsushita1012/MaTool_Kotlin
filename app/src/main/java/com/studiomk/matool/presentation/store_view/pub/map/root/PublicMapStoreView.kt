@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.studiomk.matool.presentation.store_view.pub.map.location.PublicLocationStoreView
+import com.studiomk.matool.presentation.store_view.pub.map.route.PublicRouteMap
 import com.studiomk.matool.presentation.store_view.pub.map.route.PublicRouteMapStoreView
 import com.studiomk.matool.presentation.view.navigation.CupertinoNavigationView
 import com.studiomk.matool.presentation.view.navigation.CupertinoToolBar
@@ -31,6 +33,10 @@ import io.github.alexzhirkevich.cupertino.icons.outlined.House
 @Composable
 fun PublicMapStoreView(store: StoreOf<PublicMap.State, PublicMap.Action>){
     val state by store.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        store.send(PublicMap.Action.OnAppear())
+    }
 
     CupertinoNavigationView(
         toolBar = {
@@ -87,7 +93,17 @@ fun <T> PickerMenu(
     selectedItem: T? = null,
     itemLabel: @Composable (T) -> String = { it.toString() }
 ) {
+
+    val listState = rememberLazyListState()
+    val selectedIndex = remember(selectedItem, items) {
+        items.indexOf(selectedItem).coerceAtLeast(0)
+    }
+    LaunchedEffect(selectedIndex) {
+        listState.animateScrollToItem(index = selectedIndex)
+    }
+
     LazyRow(
+        state = listState,
         modifier = modifier
             .padding(8.dp)
             .fillMaxWidth(),

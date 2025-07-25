@@ -24,10 +24,6 @@ import com.studiomk.matool.presentation.view.maps.PublicRouteMapView
 fun PublicRouteMapStoreView(store: StoreOf<PublicRouteMap.State, PublicRouteMap.Action>){
     val state by store.state.collectAsState()
 
-    LaunchedEffect(Unit) {
-        store.send(PublicRouteMap.Action.OnAppear())
-    }
-
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -48,21 +44,19 @@ fun PublicRouteMapStoreView(store: StoreOf<PublicRouteMap.State, PublicRouteMap.
                     }
             )
         }
-        state.isMenuPresented?.let {
-            ToggleMenu(
-                items = state.items,
-                selection = Binding(
-                    { state.selectedItem },
-                    { store.send(PublicRouteMap.Action.ItemSelected(it)) }
-                ),
-                isToggled = Binding(
-                    { it },
-                    { store.send(PublicRouteMap.Action.ToggleChanged(it)) }
-                ),
-                itemLabel = { it.text("m/d T") },
-                modifier = Modifier.padding(all = 16.dp)
-            )
-        }
+        ToggleMenu(
+            items = state.items,
+            selection = Binding(
+                { state.selectedItem },
+                { store.send(PublicRouteMap.Action.ItemSelected(it)) }
+            ),
+            isToggled = Binding(
+                { state.isMenuPresented },
+                { store.send(PublicRouteMap.Action.ToggleChanged(it)) }
+            ),
+            itemLabel = { it.text("m/d T") },
+            modifier = Modifier.padding(all = 16.dp)
+        )
     }
 }
 

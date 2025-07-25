@@ -154,7 +154,7 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
                     when (val result = action.districtsResult) {
                         is Result.Success -> {
                             val routeTabs = result.value.map { PublicMap.Tab.Route(it.id, it.name) }
-                            val tabs = routeTabs + PublicMap.Tab.Location()
+                            val tabs = listOf(PublicMap.Tab.Location()) + routeTabs
                             val defaultDistrict = localStore.getString(DefaultValues.DEFAULT_DISTRICT)
                             val selectedTab = routeTabs.find { it.id == defaultDistrict } ?: PublicMap.Tab.Location()
                             state.copy(

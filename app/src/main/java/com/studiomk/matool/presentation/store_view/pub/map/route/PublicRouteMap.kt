@@ -22,11 +22,11 @@ object PublicRouteMap: ReducerOf<PublicRouteMap.State, PublicRouteMap.Action>, K
 
     data class State(
         val districtId: String,
-        val items: List<RouteSummary> = listOf(),
+        val items: List<RouteSummary>,
         val selectedItem: RouteSummary? = null,
-        val selectedRoute: PublicRoute? = null,
+        val selectedRoute: PublicRoute?,
         val location: PublicLocation? = null,
-        val isMenuPresented: Boolean? = null,
+        val isMenuPresented: Boolean = false,
         val coordinateRegion: CoordinateRegion? = selectedRoute?.let{ makeRegion(it.points.map { it.coordinate }) },
     ){
         val points:List<Point>? = selectedRoute?.let { filterPoints(it) }
@@ -34,7 +34,6 @@ object PublicRouteMap: ReducerOf<PublicRouteMap.State, PublicRouteMap.Action>, K
     }
 
     sealed class Action {
-        class OnAppear() : Action()
         data class ToggleChanged(val value: Boolean) : Action()
         data class ItemSelected(val value: RouteSummary?) : Action()
         data class RoutesReceived(val result: Result<List<RouteSummary>, ApiError>) : Action()
@@ -47,20 +46,6 @@ object PublicRouteMap: ReducerOf<PublicRouteMap.State, PublicRouteMap.Action>, K
     override fun body(): ReducerOf<State, Action> =
         Reduce { state, action ->
             when (action) {
-                is Action.OnAppear -> {
-                    state to Effect.merge(
-                        Effect.run { send ->
-                            val accessToken = authService.getAccessToken()
-                            val result = apiRepository.getRoutes(state.districtId, accessToken)
-                            send(Action.RoutesReceived(result))
-                        },
-                        Effect.run { send ->
-                            val accessToken = authService.getAccessToken()
-                            val result = apiRepository.getCurrentRoute(state.districtId, accessToken)
-                            send(Action.RouteReceived(result))
-                        }
-                    )
-                }
                 is Action.ToggleChanged -> {
                     state.copy(isMenuPresented = action.value) to Effect.none()
                 }
@@ -91,7 +76,8 @@ object PublicRouteMap: ReducerOf<PublicRouteMap.State, PublicRouteMap.Action>, K
                             state.copy(
                                 selectedItem = RouteSummary(result.value),
                                 selectedRoute = result.value,
-                                isMenuPresented = false
+                                isMenuPresented = false,
+                                coordinateRegion = makeRegion(result.value.points.map { it.coordinate })
                             ) to Effect.none()
                         }
                         is Result.Failure -> {
