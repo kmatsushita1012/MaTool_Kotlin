@@ -1,7 +1,5 @@
 package com.studiomk.matool.presentation.store_view.admin.districts.route.map.point
 
-
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowOutward
@@ -14,6 +12,9 @@ import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.studiomk.ktca.core.util.Binding
@@ -76,6 +77,9 @@ fun AdminPointEditView(store: StoreOf<AdminPointEdit.State, AdminPointEdit.Actio
                     modifier = Modifier.weight(1f),
                     textStyle = MaterialTheme.typography.titleMedium,
                     trailing = {
+                        val focusRequester = remember { FocusRequester() }
+                        val focusState = remember { mutableStateOf(false) }
+
                         CupertinoIconButton(
                             onClick = { store.send(AdminPointEdit.Action.MenuTapped) },
                             content = {
@@ -84,7 +88,12 @@ fun AdminPointEditView(store: StoreOf<AdminPointEdit.State, AdminPointEdit.Actio
                                     contentDescription = null
                                 )
                             },
-                            modifier = Modifier.padding(start = 8.dp)
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .onFocusChanged {
+                                    focusState.value = it.isFocused
+                                }
+                                .focusRequester(focusRequester)
                         )
                         DropdownMenu(
                             expanded = state.showPopover,
