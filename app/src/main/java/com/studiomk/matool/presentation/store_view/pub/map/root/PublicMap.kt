@@ -83,7 +83,7 @@ object PublicMap: ReducerOf<PublicMap.State, PublicMap.Action>, KoinComponent {
                     destination =  DestinationState.Route(
                         PublicRouteMap.State(
                             districtId = action.districtId,
-                            items = action.routes.value ?: listOf(),
+                            items = action.routes.value?.sorted() ?: listOf(),
                             selectedItem = action.current.value?.let{ RouteSummary(it) },
                             selectedRoute = action.current.value
                         )
