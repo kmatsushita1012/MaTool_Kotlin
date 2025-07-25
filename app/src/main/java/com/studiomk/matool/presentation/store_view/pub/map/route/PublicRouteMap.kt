@@ -27,6 +27,7 @@ object PublicRouteMap: ReducerOf<PublicRouteMap.State, PublicRouteMap.Action>, K
         val selectedRoute: PublicRoute?,
         val location: PublicLocation? = null,
         val isMenuPresented: Boolean = false,
+        val selectedPoint: Point? = null,
         val coordinateRegion: CoordinateRegion? = selectedRoute?.let{ makeRegion(it.points.map { it.coordinate }) },
     ){
         val points:List<Point>? = selectedRoute?.let { filterPoints(it) }
@@ -38,6 +39,8 @@ object PublicRouteMap: ReducerOf<PublicRouteMap.State, PublicRouteMap.Action>, K
         data class ItemSelected(val value: RouteSummary?) : Action()
         data class RoutesReceived(val result: Result<List<RouteSummary>, ApiError>) : Action()
         data class RouteReceived(val result: Result<PublicRoute, ApiError>) : Action()
+        data class PointSelected(val value: Point?) : Action()
+        object PointClosed : Action()
     }
 
     private val apiRepository: ApiRepository by inject()
@@ -85,9 +88,14 @@ object PublicRouteMap: ReducerOf<PublicRouteMap.State, PublicRouteMap.Action>, K
                         }
                     }
                 }
+                is Action.PointSelected -> {
+                    state.copy(selectedPoint = action.value) to Effect.none()
+                }
+                is Action.PointClosed -> {
+                    state.copy(selectedPoint = null) to Effect.none()
+                }
             }
         }
-
     fun filterPoints(route: PublicRoute): List<Point> {
         val newPoints = mutableListOf<Point>()
         val points = route.points

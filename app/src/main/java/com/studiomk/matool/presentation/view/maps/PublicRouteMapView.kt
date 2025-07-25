@@ -28,6 +28,7 @@ fun PublicRouteMapView(
     location: PublicLocation?,
     region: Binding<CoordinateRegion?>,
     modifier: Modifier = Modifier,
+    onPointTap: (Point) -> Unit = {},
 ) {
     val context = LocalContext.current
     val mapStyle = remember {
@@ -55,6 +56,9 @@ fun PublicRouteMapView(
                     label = buildString {
                         point.title?.let { append(it) }
                     },
+                    onClick = {
+                        onPointTap(point)
+                    }
                 )
             }
         }
@@ -68,6 +72,7 @@ fun PublicRouteMapView(
             }
         }
     }
+
 }
 
 

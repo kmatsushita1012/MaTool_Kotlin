@@ -52,7 +52,7 @@ fun HomeStoreView(store: StoreOf<Home.State, Home.Action>) {
             )
             // 地図
             HomeCard(
-                title = "準備中",
+                title = "地図",
                 onClick = {
                     store.send(Home.Action.MapTapped)
                 },

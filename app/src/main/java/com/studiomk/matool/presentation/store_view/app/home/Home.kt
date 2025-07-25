@@ -1,7 +1,6 @@
 package com.studiomk.matool.presentation.store_view.app.home
 
 import SignInResult
-import android.util.Log
 import com.studiomk.matool.application.service.AuthService
 import com.studiomk.ktca.core.reducer.Reduce
 import com.studiomk.ktca.core.reducer.ReducerOf
