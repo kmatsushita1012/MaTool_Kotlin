@@ -18,48 +18,17 @@ jobs:
         with:
           java-version: 21
 
-      - name: Create secrets directory
+      - name: Decode keystore
         run: |
-          mkdir secrets
+          echo "${{ secrets.ENCODED_RELEASE_KEYSTORE }}" | base64 -d > ./app/key.jks
 
-      - name: Decode Keystore
-        run: echo '${{ secrets.ENCODED_RELEASE_KEYSTORE }}' | base64 --decode > playstore.keystore
-
-      - name: Copy Keystore
+      - name: Set up gradle.properties
         run: |
-          cp playstore.keystore secrets/playstore.keystore
-
-      - name: Create amplifyconfiguration.json (Android)
-        run: |
-          mkdir -p app/src/main/res/raw
-          cat <<EOF > app/src/main/res/raw/amplifyconfiguration.json
-          {
-            "aws_project_region": "ap-northeast-1",
-            "auth": {
-                "plugins": {
-                  "awsCognitoAuthPlugin": {
-                        "CognitoUserPool": {
-                          "Default": {
-                              "PoolId": "${{ secrets.AWS_AMPLIFY_COGNITO_POOL_ID }}",
-                              "AppClientId": "${{ secrets.AWS_AMPLIFY_COGNITO_APP_CLIENT_ID }}",
-                              "Region": "${{ secrets.AWS_AMPLIFY_COGNITO_REGION }}"
-                          }
-                        },
-                        "Auth": {
-                          "Default": {
-                              "authenticationFlowType": "USER_SRP_AUTH"
-                          }
-                      }
-                  }
-                }
-            }
-          }
-          EOF
-
-      - name: Log
-        run: |
-          ls
-          ls app/src/main/res/raw
+          echo "KEYSTORE_FILE=./key.jks" >> local.properties
+          echo "KEYSTORE_PASSWORD=${{ secrets.RELEASE_KEYSTORE_STORE_PASSWORD }}" >> local.properties
+          echo "KEY_ALIAS=${{ secrets.RELEASE_KEYSTORE_ALIAS }}" >> local.properties
+          echo "KEY_PASSWORD=${{ secrets.RELEASE_KEYSTORE_ALIAS_PASSWORD }}" >> local.properties
+          echo "MAPS_API_KEY=${{ secrets.MAPS_API_KEY }}" >> local.properties
 
       - name: Set VERSION_CODE with offset and log it
         run: |
@@ -70,7 +39,4 @@ jobs:
       - name: Generate AAB
         run: ./gradlew :app:bundleRelease
         env:
-          KEYSTORE_ALIAS: ${{ secrets.RELEASE_KEYSTORE_ALIAS }}
-          KEYSTORE_ALIAS_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_ALIAS_PASSWORD }}
-          KEYSTORE_STORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_STORE_PASSWORD }}
           VERSION_CODE: ${{ env.VERSION_CODE }}
