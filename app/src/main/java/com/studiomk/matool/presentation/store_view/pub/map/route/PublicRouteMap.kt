@@ -37,7 +37,6 @@ object PublicRouteMap: ReducerOf<PublicRouteMap.State, PublicRouteMap.Action>, K
     sealed class Action {
         data class ToggleChanged(val value: Boolean) : Action()
         data class ItemSelected(val value: RouteSummary?) : Action()
-        data class RoutesReceived(val result: Result<List<RouteSummary>, ApiError>) : Action()
         data class RouteReceived(val result: Result<PublicRoute, ApiError>) : Action()
         data class PointSelected(val value: Point?) : Action()
         object PointClosed : Action()
@@ -60,16 +59,6 @@ object PublicRouteMap: ReducerOf<PublicRouteMap.State, PublicRouteMap.Action>, K
                         action.value?.let{
                             val result = apiRepository.getRoute(it.id, authService.getAccessToken())
                             send(Action.RouteReceived(result))
-                        }
-                    }
-                }
-                is Action.RoutesReceived -> {
-                    when (val result = action.result) {
-                        is Result.Success -> {
-                            state.copy(items = result.value) to Effect.none()
-                        }
-                        is Result.Failure -> {
-                            state to Effect.none()
                         }
                     }
                 }

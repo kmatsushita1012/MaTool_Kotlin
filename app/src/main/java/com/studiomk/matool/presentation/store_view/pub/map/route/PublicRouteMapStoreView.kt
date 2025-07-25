@@ -55,7 +55,6 @@ fun PublicRouteMapStoreView(store: StoreOf<PublicRouteMap.State, PublicRouteMap.
                 { }
             ),
             onPointTap = {
-                Log.d("PublicRouteMapStoreView", "onPointTap")
                 store.send(PublicRouteMap.Action.PointSelected(it))
             }
         )
