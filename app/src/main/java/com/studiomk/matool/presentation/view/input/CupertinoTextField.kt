@@ -1,5 +1,6 @@
 package com.studiomk.matool.presentation.view.input
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -22,10 +23,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 
 
 @Composable
@@ -39,9 +43,15 @@ fun CupertinoTextField(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     trailing: (@Composable () -> Unit)? = null,
 ) {
-    var isFocused by remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
+    val focusState = remember { mutableStateOf(false) }
 
     var internalText by rememberSaveable { mutableStateOf(value) }
+    LaunchedEffect(value, focusState.value) {
+        if(internalText != value && !focusState.value){
+            internalText = value
+        }
+    }
 
     Box(
         modifier = modifier
@@ -71,11 +81,12 @@ fun CupertinoTextField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .onFocusChanged {
-                            isFocused = it.isFocused
-                        },
+                            focusState.value = it.isFocused
+                        }
+                        .focusRequester(focusRequester),
                     visualTransformation = visualTransformation,
                     decorationBox = { innerTextField ->
-                        if (value.isEmpty()) {
+                        if (internalText.isEmpty()) {
                             Text(
                                 text = placeholder,
                                 color = Color.Gray,
@@ -107,54 +118,13 @@ fun CupertinoBorderedTextField(
     enabled: Boolean = true,
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-) {
-    var isFocused by remember { mutableStateOf(false) }
-
-    var internalText by rememberSaveable { mutableStateOf(value) }
-
-    val borderColor = if (isFocused) Color(0xFFB0BEC5) else Color(0xFFCED4DA)
-
-    Box(
-        modifier = modifier
-            .height(48.dp)
-            .fillMaxWidth()
-            .background(Color.White, RoundedCornerShape(8.dp))
-            .border(
-                width = 1.dp,
-                color = borderColor,
-                shape = RoundedCornerShape(8.dp)
-            )
-            .padding(horizontal = 12.dp, vertical = 4.dp),
-        contentAlignment = Alignment.CenterStart
-    ) {
-        BasicTextField(
-            value = internalText,
-            onValueChange = {
-                internalText = it
-                onValueChange(it)
-            },
-            enabled = enabled,
-            textStyle = textStyle.copy(
-                color = if (enabled) Color.Black else Color.Gray,
-                textAlign = TextAlign.Start
-            ),
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .onFocusChanged {
-                    isFocused = it.isFocused
-                },
-            visualTransformation = visualTransformation,
-            decorationBox = { innerTextField ->
-                if (value.isEmpty()) {
-                    Text(
-                        text = placeholder,
-                        color = Color.Gray,
-                        style = textStyle
-                    )
-                }
-                innerTextField()
-            }
-        )
-    }
-}
+) = CupertinoTextField(
+    value = value,
+    onValueChange = onValueChange,
+    modifier = modifier
+        .border(1.dp, Color.Black, RoundedCornerShape(8.dp)),
+    placeholder = placeholder,
+    enabled = enabled,
+    textStyle = textStyle,
+    visualTransformation = visualTransformation
+)
