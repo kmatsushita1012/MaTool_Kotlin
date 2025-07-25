@@ -18,21 +18,25 @@ jobs:
         with:
           java-version: 21
 
-      - name: Create secrets directory
+      - name: Decode keystore
         run: |
-          mkdir secrets
+          echo "${{ secrets.ENCODED_RELEASE_KEYSTORE }}" | base64 -d > ./app/key.jks
 
-      - name: Decode Keystore
-        run: echo '${{ secrets.ENCODED_RELEASE_KEYSTORE }}' | base64 --decode > playstore.keystore
-
-      - name: Copy Keystore
+      - name: Set up gradle.properties
         run: |
-          cp playstore.keystore secrets/playstore.keystore
+          echo "KEYSTORE_FILE=./key.jks" >> local.properties
+          echo "KEYSTORE_PASSWORD=${{ secrets.RELEASE_KEYSTORE_STORE_PASSWORD }}" >> local.properties
+          echo "KEY_ALIAS=${{ secrets.RELEASE_KEYSTORE_ALIAS }}" >> local.properties
+          echo "KEY_PASSWORD=${{ secrets.RELEASE_KEYSTORE_ALIAS_PASSWORD }}" >> local.properties
+          echo "MAPS_API_KEY=${{ secrets.MAPS_API_KEY }}" >> local.properties
+
+      - name: Set VERSION_CODE with offset and log it
+        run: |
+          VERSION_CODE=$(( ${{ github.run_number }} + 13 ))
+          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
+          echo "VERSION_CODE is set to: $VERSION_CODE"
 
       - name: Generate AAB
         run: ./gradlew :app:bundleRelease
         env:
-          KEYSTORE_ALIAS: ${{ secrets.RELEASE_KEYSTORE_ALIAS }}
-          KEYSTORE_ALIAS_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_ALIAS_PASSWORD }}
-          KEYSTORE_STORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_STORE_PASSWORD }}
-          VERSION_CODE: ${{ github.run_number }}
+          VERSION_CODE: ${{ env.VERSION_CODE }}
