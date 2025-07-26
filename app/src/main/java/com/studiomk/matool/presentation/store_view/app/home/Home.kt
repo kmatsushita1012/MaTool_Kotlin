@@ -1,7 +1,6 @@
 package com.studiomk.matool.presentation.store_view.app.home
 
 import SignInResult
-import android.util.Log
 import com.studiomk.matool.application.service.AuthService
 import com.studiomk.ktca.core.reducer.Reduce
 import com.studiomk.ktca.core.reducer.ReducerOf
@@ -20,6 +19,7 @@ import com.studiomk.matool.domain.entities.routes.RouteSummary
 import com.studiomk.matool.domain.entities.regions.Region
 import com.studiomk.matool.domain.entities.shared.UserRole
 import com.studiomk.matool.domain.entities.shared.Result
+import com.studiomk.matool.presentation.store_view.pub.map.root.PublicMap
 import com.studiomk.matool.presentation.store_view.admin.districts.top.AdminDistrictTop
 import com.studiomk.matool.presentation.store_view.admin.regions.top.AdminRegionTop
 import com.studiomk.matool.presentation.store_view.shared.notice_alert.NoticeAlert
@@ -36,8 +36,8 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
     private val localStore: LocalStore by inject()
 
     sealed class Destination {
-//        @ChildFeature(PublicMap::class)
-//        object Route : Destination()
+        @ChildFeature(PublicMap::class)
+        object Map : Destination()
         @ChildFeature(com.studiomk.matool.presentation.store_view.pub.info.Info::class)
         object Info : Destination()
         @ChildFeature(com.studiomk.matool.presentation.store_view.auth.login.Login::class)
@@ -63,12 +63,15 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
 
     sealed class Action {
         object OnAppear : Action()
-        object RouteTapped : Action()
+        object MapTapped : Action()
         object InfoTapped : Action()
         object AdminTapped : Action()
         object SettingsTapped : Action()
         object DestinationDismissed: Action()
         data class AuthInitializeReceived(val result: Result<UserRole, AuthError>) : Action()
+        data class MapPrepared(
+            val districtsResult: Result<List<PublicDistrict>, ApiError>
+        ) : Action()
         data class AdminDistrictPrepared(
             val districtResult: Result<PublicDistrict, ApiError>,
             val routesResult: Result<List<RouteSummary>, ApiError>
@@ -99,7 +102,6 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
             reducer = NoticeAlert
         ) +
         Reduce { state, action ->
-            Log.d("Home", "action: $action")
             when (action) {
                 is Action.OnAppear -> {
                     state.copy(isAuthLoading = true) to Effect.run { send ->
@@ -113,9 +115,14 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
                         isAuthLoading = false
                     ) to Effect.none()
                 }
-                is Action.RouteTapped -> {
-//                    state.copy(destination = DestinationState.Route) to Effect.none()
-                    state to Effect.none()
+                is Action.MapTapped -> {
+                    val regionId =  localStore.getString(DefaultValues.DEFAULT_REGION)!!
+                    state.copy(
+                        isDestinationLoading = true,
+                    ) to Effect.run{ send ->
+                        val result = apiRepository.getDistricts(regionId)
+                        send(Action.MapPrepared(result))
+                    }
                 }
                 is Action.InfoTapped -> {
 //                    state.destination = DestinationState.Info(Info.State())
@@ -141,6 +148,32 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
                     val regionId = localStore.getString(DefaultValues.DEFAULT_REGION)
                     val districtId = localStore.getString(DefaultValues.DEFAULT_DISTRICT)
                     state.copy(isDestinationLoading = true) to settingsEffect(regionId, districtId)
+                }
+                is Action.MapPrepared -> {
+                    when (val result = action.districtsResult) {
+                        is Result.Success -> {
+                            val routeTabs = result.value.map { PublicMap.Tab.Route(it.id, it.name) }
+                            val tabs = listOf(PublicMap.Tab.Location()) + routeTabs
+                            val defaultDistrict = localStore.getString(DefaultValues.DEFAULT_DISTRICT)
+                            val selectedTab = routeTabs.find { it.id == defaultDistrict } ?: PublicMap.Tab.Location()
+                            state.copy(
+                                isDestinationLoading = false,
+                                destination = DestinationState.Map(
+                                    PublicMap.State(
+                                        regionId = localStore.getString(DefaultValues.DEFAULT_REGION)!!,
+                                        tabItems = tabs,
+                                        selectedTab =selectedTab
+                                    )
+                                )
+                            ) to Effect.none()
+                        }
+                        is Result.Failure -> {
+                            state.copy(
+                                isDestinationLoading = false,
+                                alert = NoticeAlert.State.error("情報の取得に失敗しました")
+                            ) to Effect.none()
+                        }
+                    }
                 }
                 is Action.AdminDistrictPrepared -> {
                     val (districtResult, routesResult) = action
@@ -209,6 +242,12 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
                 //TODO
                 is Action.Destination -> {
                     when(val action = action.action){
+                        is DestinationAction.Map -> {
+                            when(val action = action.action){
+                                is PublicMap.Action.DismissTapped -> state.copy(destination = null) to Effect.none()
+                                else -> state to Effect.none()
+                            }
+                        }
                         is DestinationAction.Login->{
                             when(val action = action.action){
                                 is Login.Action.HomeTapped->

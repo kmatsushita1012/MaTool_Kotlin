@@ -142,9 +142,9 @@ dependencies {
     implementation(libs.core)
     implementation(libs.aws.auth.cognito)
     //ktca
-    implementation("com.github.kmatsushita1012.ktca:ktca-core:cf19560404")
-    implementation("com.github.kmatsushita1012.ktca:ktca-ui:cf19560404")
-    ksp("com.github.kmatsushita1012.ktca:ktca-processor:cf19560404")
+    implementation("com.github.kmatsushita1012.ktca:ktca-core:9b0f2a8982")
+    implementation("com.github.kmatsushita1012.ktca:ktca-ui:9b0f2a8982")
+    ksp("com.github.kmatsushita1012.ktca:ktca-processor:9b0f2a8982")
     //Picker
     implementation(libs.material3.picker)
     //launcher

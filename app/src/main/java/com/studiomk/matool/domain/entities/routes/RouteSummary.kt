@@ -13,6 +13,16 @@ data class RouteSummary(
     val title: String,
     val start: SimpleTime
 ) : Comparable<RouteSummary> {
+
+    constructor(route: PublicRoute) : this(
+        id = route.id,
+        districtId = route.districtId,
+        districtName = route.districtName,
+        date = route.date,
+        title = route.title,
+        start = route.start
+    )
+
     override fun compareTo(other: RouteSummary): Int {
         return if (date != other.date) {
             date.compareTo(other.date)
