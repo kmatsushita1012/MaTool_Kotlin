@@ -22,6 +22,7 @@ import com.studiomk.matool.presentation.store_view.auth.login.LoginStoreView
 import com.studiomk.matool.presentation.store_view.admin.districts.top.AdminDistrictTopStoreView
 import com.studiomk.matool.presentation.store_view.admin.regions.top.AdminRegionTopStoreView
 import com.studiomk.matool.presentation.store_view.app.settings.SettingsStoreView
+import com.studiomk.matool.presentation.store_view.pub.map.root.PublicMapStoreView
 import com.studiomk.matool.presentation.store_view.shared.notice_alert.NoticeAlertDialog
 import com.studiomk.matool.presentation.view.navigation.CupertinoNavigationView
 import com.studiomk.matool.presentation.view.others.LoadingOverlay
@@ -31,7 +32,7 @@ import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
 @Composable
 fun HomeStoreView(store: StoreOf<Home.State, Home.Action>) {
     val state by store.state.collectAsState()
-    CupertinoNavigationView() {
+    CupertinoNavigationView {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -51,8 +52,10 @@ fun HomeStoreView(store: StoreOf<Home.State, Home.Action>) {
             )
             // 地図
             HomeCard(
-                title = "準備中",
-                onClick = { },
+                title = "地図",
+                onClick = {
+                    store.send(Home.Action.MapTapped)
+                },
                 foregroundColor =  Color.White,
                 backgroundColor = HomeCardColors.Red,
                 modifier = Modifier
@@ -120,14 +123,14 @@ fun HomeStoreView(store: StoreOf<Home.State, Home.Action>) {
         }
     }
     // フルスクリーン遷移
-//        FullScreen(
-//            item = store.optionalScope(
-//                statePath = Home.destinationKey + Home.Destination.Route.key,
-//                actionPath = Home.destinationCase + Home.Destination.Route.case
-//            )
-//        ) {
-//            PublicMapStoreView(store = it)
-//        }
+    FullScreen(
+        item = store.optionalScope(
+            statePath = Home.destinationKey + Home.Destination.Map.key,
+            actionPath = Home.destinationCase + Home.Destination.Map.case
+        )
+    ) {
+        PublicMapStoreView(store = it)
+    }
 //        FullScreen(
 //            item = store.optionalScope(
 //                statePath = Home.destinationKey + Home.Destination.Info.key,

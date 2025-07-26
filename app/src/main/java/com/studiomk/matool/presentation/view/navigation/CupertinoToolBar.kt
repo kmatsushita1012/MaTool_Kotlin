@@ -8,9 +8,9 @@ import androidx.compose.ui.unit.*
 @Composable
 fun CupertinoToolBar(
     modifier: Modifier = Modifier,
-    leading: @Composable () -> Unit = {},
-    center: @Composable () -> Unit = {},
-    trailing: @Composable () -> Unit = {}
+    leading:  @Composable (() -> Unit) = {},
+    center: @Composable (() -> Unit) = {},
+    trailing: @Composable (() -> Unit) = {}
 ) {
     Box(
         modifier = modifier
