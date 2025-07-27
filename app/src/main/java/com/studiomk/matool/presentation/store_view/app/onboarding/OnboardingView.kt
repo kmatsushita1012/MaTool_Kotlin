@@ -15,6 +15,7 @@ import com.studiomk.matool.presentation.view.others.LoadingOverlay
 import com.studiomk.matool.presentation.view.input.MenuSelector
 import io.github.alexzhirkevich.cupertino.*
 import com.studiomk.ktca.core.store.Store
+import com.studiomk.matool.presentation.view.input.CupertinoSecondaryButton
 import io.github.alexzhirkevich.cupertino.CupertinoButtonDefaults.plainButtonColors
 
 @OptIn(ExperimentalCupertinoApi::class)
@@ -71,16 +72,11 @@ fun OnboardingStoreView(store: Store<Onboarding.State, Onboarding.Action>) {
         }
 
         // 参加町以外
-        CupertinoButton(
+        CupertinoSecondaryButton(
             onClick = { store.send(Onboarding.Action.ExternalGuestTapped) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            border = BorderStroke(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.primary
-            ),
-            colors = plainButtonColors()
+                .padding(vertical = 8.dp)
         ) {
             Text(
                 "参加町以外からお越しの方",
@@ -91,16 +87,11 @@ fun OnboardingStoreView(store: Store<Onboarding.State, Onboarding.Action>) {
         }
 
         // 管理者
-        CupertinoButton(
+        CupertinoSecondaryButton(
             onClick = { store.send(Onboarding.Action.AdminTapped) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            border = BorderStroke(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.primary
-            ),
-            colors = plainButtonColors()
+                .padding(vertical = 8.dp)
         ) {
             Text(
                 "参加町代表者、管理者の方",
