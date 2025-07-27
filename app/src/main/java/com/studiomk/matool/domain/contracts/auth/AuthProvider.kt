@@ -3,7 +3,7 @@ package com.studiomk.matool.domain.contracts.auth
 import com.studiomk.matool.domain.entities.shared.*
 
 interface AuthProvider {
-    suspend fun initialize(): Result<String, AuthError>
+    fun initialize(): Unit
     suspend fun signIn(username: String, password: String): SignInResponse
     suspend fun confirmSignIn(newPassword: String): Result<String, AuthError>
     suspend fun getUserRole(): Result<UserRole, AuthError>

@@ -1,13 +1,16 @@
 package com.studiomk.matool.data.auth.aws_cognito
 
-import androidx.compose.runtime.key
+import android.util.Log
+import com.amplifyframework.auth.AuthException
 import com.amplifyframework.auth.AuthUserAttribute
 import com.amplifyframework.auth.AuthUserAttributeKey
+import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin
 import com.amplifyframework.auth.cognito.AWSCognitoAuthSession
+import com.amplifyframework.auth.cognito.exceptions.service.InvalidParameterException
 import com.amplifyframework.auth.options.AuthUpdateUserAttributeOptions
-import com.amplifyframework.auth.result.step.AuthNextUpdateAttributeStep
 import com.amplifyframework.auth.result.step.AuthUpdateAttributeStep
 import com.amplifyframework.core.Amplify
+import com.studiomk.matool.App
 import com.studiomk.matool.domain.contracts.auth.AuthError
 import com.studiomk.matool.domain.contracts.auth.AuthProvider
 import com.studiomk.matool.domain.contracts.auth.SignInResponse
@@ -17,14 +20,12 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
 class AwsCognitoProvider : AuthProvider {
-    override suspend fun initialize(): Result<String, AuthError> =
-        suspendCancellableCoroutine { cont ->
-            try {
-                cont.resume(Result.Success("Success"))
-            } catch (e: Exception) {
-                cont.resume(Result.Failure(AuthError.Unknown("init ${e.localizedMessage}")))
-            }
-        }
+    //アプリ起動時に行うためスキップ
+    override fun initialize(): Unit{
+        Amplify.addPlugin(AWSCognitoAuthPlugin())
+        Amplify.configure(App.context)
+        return
+    }
 
     override suspend fun signIn(username: String, password: String): SignInResponse =
         suspendCancellableCoroutine { cont ->
@@ -43,7 +44,7 @@ class AwsCognitoProvider : AuthProvider {
                     }
                 },
                 { error ->
-                    cont.resume(SignInResponse.Failure(AuthError.Unknown("signIn ${error.localizedMessage}")))
+                    cont.resume(SignInResponse.Failure(AuthError.Unknown(error.localizedMessageJa)))
                 }
             )
         }
@@ -65,7 +66,7 @@ class AwsCognitoProvider : AuthProvider {
             { error ->
                 cont.resume(
                     Result.Failure(
-                        AuthError.Unknown("confirmSignIn error: ${error.localizedMessage}")
+                        AuthError.Unknown(error.localizedMessageJa)
                     )
                 )
             }
@@ -88,13 +89,13 @@ class AwsCognitoProvider : AuthProvider {
                         }
                         cont.resume(Result.Success(userRole))
                     },
-                    {
-                        cont.resume(Result.Failure(AuthError.Unknown("user ${it.localizedMessage}")))
+                    { error ->
+                        cont.resume(Result.Failure(AuthError.Unknown(error.localizedMessageJa)))
                     }
                 )
             },
-            {
-                cont.resume(Result.Failure(AuthError.Unknown("role ${it.localizedMessage}")))
+            { error ->
+                cont.resume(Result.Failure(AuthError.Unknown(error.localizedMessageJa)))
             }
         )
     }
@@ -114,7 +115,7 @@ class AwsCognitoProvider : AuthProvider {
                 }
             },
             { error ->
-                cont.resume(Result.Failure(AuthError.Unknown(error.localizedMessage ?: "getTokens error")))
+                cont.resume(Result.Failure(AuthError.Unknown(error.localizedMessageJa)))
             }
         )
     }
@@ -133,7 +134,7 @@ class AwsCognitoProvider : AuthProvider {
                 cont.resume(Result.Success(Unit))
             },
             { error ->
-                cont.resume(Result.Failure(AuthError.Unknown("changePassword: ${error.localizedMessage}")))
+                cont.resume(Result.Failure(AuthError.Unknown(error.localizedMessageJa)))
             }
         )
     }
@@ -145,7 +146,7 @@ class AwsCognitoProvider : AuthProvider {
                 cont.resume(Result.Success(Unit))
             },
             { error ->
-                cont.resume(Result.Failure(AuthError.Unknown("resetPassword: ${error.localizedMessage}")))
+                cont.resume(Result.Failure(AuthError.Unknown(error.localizedMessageJa)))
             }
         )
     }
@@ -159,7 +160,7 @@ class AwsCognitoProvider : AuthProvider {
                 cont.resume(Result.Success(Unit))
             },
             { error ->
-                cont.resume(Result.Failure(AuthError.Unknown("confirmResetPassword: ${error.localizedMessage}")))
+                cont.resume(Result.Failure(AuthError.Unknown(error.localizedMessageJa)))
             }
         )
     }
@@ -179,7 +180,7 @@ class AwsCognitoProvider : AuthProvider {
                 }
             },
             { error ->
-                cont.resume(UpdateEmailResult.Failure(AuthError.Unknown("updateEmail: ${error.localizedMessage}")))
+                cont.resume(UpdateEmailResult.Failure(AuthError.Unknown(error.localizedMessageJa)))
             }
         )
     }
@@ -192,7 +193,7 @@ class AwsCognitoProvider : AuthProvider {
                 cont.resume(Result.Success(Unit))
             },
             { error ->
-                cont.resume(Result.Failure(AuthError.Unknown("confirmUpdateEmail: ${error.localizedMessage}")))
+                cont.resume(Result.Failure(AuthError.Unknown(error.localizedMessageJa)))
             }
         )
     }

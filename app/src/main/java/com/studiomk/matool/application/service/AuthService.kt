@@ -18,18 +18,8 @@ class AuthService : KoinComponent {
 
     private val mutex = Mutex()
 
-    suspend fun initialize(): Result<UserRole, AuthError> = mutex.withLock {
-        val initializeResult = authProvider.initialize()
-        if (initializeResult is Result.Failure) {
-            return Result.Failure(initializeResult.error)
-        }
-        val userRoleResult = authProvider.getUserRole()
-        return when (userRoleResult) {
-            is Result.Success -> Result.Success(userRoleResult.value)
-            is Result.Failure -> {
-                Result.Failure(userRoleResult.error)
-            }
-        }
+    fun initialize(): Unit {
+        authProvider.initialize()
     }
 
     suspend fun signIn(username: String, password: String): SignInResult = mutex.withLock {
@@ -71,6 +61,14 @@ class AuthService : KoinComponent {
             return Result.Failure(signOutResult.error)
         }
         return Result.Success(UserRole.Guest)
+    }
+
+    suspend fun getUserRole(): UserRole = mutex.withLock {
+        val userRoleResult = authProvider.getUserRole()
+        when (userRoleResult){
+            is Result.Success -> userRoleResult.value
+            is Result.Failure -> UserRole.Guest
+        }
     }
 
     suspend fun getAccessToken(): String? = mutex.withLock {
