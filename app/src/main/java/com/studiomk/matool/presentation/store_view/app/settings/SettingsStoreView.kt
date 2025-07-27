@@ -36,8 +36,8 @@ fun SettingsStoreView(store: StoreOf<Settings.State, Settings.Action>) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         TitleView(
-            imageName = "SettingsBackground",
-            titleText = "MaTool",
+            text = "設定",
+            image = "SettingsBackground",
             isDismissEnabled = state.isDismissEnabled,
             onDismiss = { store.send(Settings.Action.DismissTapped) }
         )

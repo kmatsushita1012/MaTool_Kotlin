@@ -11,6 +11,6 @@ sealed class AuthError(override val message: String) : Exception() {
             is Network -> "Network Error: $message"
             is Encoding -> "Encoding Error: $message"
             is Decoding -> "Decoding Error: $message"
-            is Unknown -> "Unknown Error: $message"
+            is Unknown -> message
         }
 }

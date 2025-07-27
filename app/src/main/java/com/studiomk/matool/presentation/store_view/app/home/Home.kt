@@ -68,7 +68,7 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
         object AdminTapped : Action()
         object SettingsTapped : Action()
         object DestinationDismissed: Action()
-        data class AuthInitializeReceived(val result: Result<UserRole, AuthError>) : Action()
+        data class UserRoleReceived(val value: UserRole) : Action()
         data class MapPrepared(
             val districtsResult: Result<List<PublicDistrict>, ApiError>
         ) : Action()
@@ -105,13 +105,13 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
             when (action) {
                 is Action.OnAppear -> {
                     state.copy(isAuthLoading = true) to Effect.run { send ->
-                        val result = authService.initialize()
-                        send(Action.AuthInitializeReceived(result))
+                        val result = authService.getUserRole()
+                        send(Action.UserRoleReceived(result))
                     }
                 }
-                is Action.AuthInitializeReceived -> {
+                is Action.UserRoleReceived -> {
                     state.copy(
-                        userRole = action.result.value ?: UserRole.Guest,
+                        userRole = action.value,
                         isAuthLoading = false
                     ) to Effect.none()
                 }
@@ -271,25 +271,30 @@ object Home : ReducerOf<Home.State, Home.Action>, KoinComponent {
                                         is SignInResult.Failure-> state to Effect.none()
                                     }
                                 }
-                                is Login.Action.ConfirmSignIn -> {
+                                is Login.Action.Destination -> {
                                     when(val action = action.action){
-                                        is ConfirmSignIn.Action.Received->{
-                                           when(val result = action.result){
-                                               is Result.Success ->  {
-                                                   when (val userRole = result.value) {
-                                                       is UserRole.Region -> state.copy(
-                                                           isDestinationLoading = true,
-                                                           userRole = userRole
-                                                       ) to adminRegionEffect(id = userRole.id)
-                                                       is UserRole.District -> state.copy(
-                                                           isDestinationLoading = true,
-                                                           userRole = userRole
-                                                       ) to adminDistrictEffect(id = userRole.id)
-                                                       is UserRole.Guest -> state to Effect.none()
-                                                   }
-                                               }
-                                               is Result.Failure -> state to Effect.none()
-                                           }
+                                        is com.studiomk.matool.presentation.store_view.auth.login.DestinationAction.ConfirmSignIn -> {
+                                            when(val action = action.action){
+                                                is ConfirmSignIn.Action.Received->{
+                                                    when(val result = action.result){
+                                                        is Result.Success ->  {
+                                                            when (val userRole = result.value) {
+                                                                is UserRole.Region -> state.copy(
+                                                                    isDestinationLoading = true,
+                                                                    userRole = userRole
+                                                                ) to adminRegionEffect(id = userRole.id)
+                                                                is UserRole.District -> state.copy(
+                                                                    isDestinationLoading = true,
+                                                                    userRole = userRole
+                                                                ) to adminDistrictEffect(id = userRole.id)
+                                                                is UserRole.Guest -> state to Effect.none()
+                                                            }
+                                                        }
+                                                        is Result.Failure -> state to Effect.none()
+                                                    }
+                                                }
+                                                else -> state to Effect.none()
+                                            }
                                         }
                                         else -> state to Effect.none()
                                     }

@@ -27,6 +27,7 @@ import com.studiomk.matool.presentation.store_view.app.home.HomeStoreView
 import com.studiomk.matool.presentation.store_view.app.onboarding.Onboarding
 import com.studiomk.matool.presentation.store_view.app.onboarding.OnboardingStoreView
 import com.studiomk.ktca.core.store.Store
+import com.studiomk.matool.application.service.AuthService
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -36,6 +37,8 @@ import kotlin.getValue
 
 class MainActivity : ComponentActivity(), KoinComponent {
     private val localStore: LocalStore by inject()
+    private val authService: AuthService by inject()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,8 +65,7 @@ class MainActivity : ComponentActivity(), KoinComponent {
 //            }
 //        }
 
-         Amplify.addPlugin(AWSCognitoAuthPlugin())
-         Amplify.configure(com.studiomk.matool.App.context)
+        val result = authService.initialize()
 
         setContent {
             AppTheme {
