@@ -85,9 +85,13 @@ object PublicRouteMap: ReducerOf<PublicRouteMap.State, PublicRouteMap.Action>, K
                 }
             }
         }
+    
     fun filterPoints(route: PublicRoute): List<Point> {
         val newPoints = mutableListOf<Point>()
         val points = route.points
+        if(points.isEmpty()){
+            return newPoints
+        }
         if (points.firstOrNull()?.title == null) {
             val first = points.first()
             val tempFirst = first.copy(
