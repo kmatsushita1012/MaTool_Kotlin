@@ -24,6 +24,8 @@ import com.studiomk.matool.presentation.view.navigation.CupertinoToolbarLeadingB
 import com.studiomk.matool.presentation.view.others.LoadingOverlay
 import com.studiomk.ktca.core.store.StoreOf
 import com.studiomk.ktca.ui.FullScreen
+import com.studiomk.matool.presentation.store_view.auth.change_password.ChangePasswordStoreView
+import com.studiomk.matool.presentation.store_view.auth.update_email.UpdateEmailStoreView
 import io.github.alexzhirkevich.cupertino.CupertinoHorizontalDivider
 import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
 import io.github.alexzhirkevich.cupertino.icons.CupertinoIcons
@@ -87,6 +89,18 @@ fun AdminDistrictTopStoreView(store: StoreOf<AdminDistrictTop.State, AdminDistri
             }
             CupertinoSection {
                 ListItemButton(
+                    onClick = {store.send(AdminDistrictTop.Action.ChangePasswordTapped)},
+                    text = "パスワード変更",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                ListItemButton(
+                    onClick = {store.send(AdminDistrictTop.Action.UpdateEmailTapped)},
+                    text = "メールアドレス変更",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+            CupertinoSection {
+                ListItemButton(
                     onClick = {store.send(AdminDistrictTop.Action.SignOutTapped)},
                     text = "ログアウト",
                     tint = MaterialTheme.colorScheme.error
@@ -130,6 +144,24 @@ fun AdminDistrictTopStoreView(store: StoreOf<AdminDistrictTop.State, AdminDistri
         onDismiss = { store.send(AdminDistrictTop.Action.DestinationDismissed) }
     ) {
         AdminRouteExportStoreView(store = it)
+    }
+    FullScreen(
+        item = store.optionalScope(
+            statePath = AdminDistrictTop.destinationKey + AdminDistrictTop.Destination.ChangePassword.key,
+            actionPath = AdminDistrictTop.destinationCase + AdminDistrictTop.Destination.ChangePassword.case
+        ),
+        onDismiss = { store.send(AdminDistrictTop.Action.DestinationDismissed) }
+    ) {
+        ChangePasswordStoreView(store = it)
+    }
+    FullScreen(
+        item = store.optionalScope(
+            statePath = AdminDistrictTop.destinationKey + AdminDistrictTop.Destination.UpdateEmail.key,
+            actionPath = AdminDistrictTop.destinationCase + AdminDistrictTop.Destination.UpdateEmail.case
+        ),
+        onDismiss = { store.send(AdminDistrictTop.Action.DestinationDismissed) }
+    ) {
+        UpdateEmailStoreView(store = it)
     }
     NoticeAlertDialog(
         store = store.optionalScope(

@@ -7,9 +7,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.text.font.FontWeight
 import com.studiomk.ktca.core.store.StoreOf
 import com.studiomk.ktca.ui.FullScreen
+import com.studiomk.matool.presentation.store_view.admin.districts.top.AdminDistrictTop
+import com.studiomk.matool.presentation.store_view.admin.districts.top.case
+import com.studiomk.matool.presentation.store_view.admin.districts.top.destinationCase
+import com.studiomk.matool.presentation.store_view.admin.districts.top.destinationKey
+import com.studiomk.matool.presentation.store_view.admin.districts.top.key
 import com.studiomk.matool.presentation.store_view.admin.regions.edit.AdminRegionEditStoreView
 import com.studiomk.matool.presentation.store_view.admin.regions.district.list.AdminRegionDistrictListStoreView
 import com.studiomk.matool.presentation.store_view.admin.regions.district.create.AdminRegionDistrictCreateStoreView
+import com.studiomk.matool.presentation.store_view.auth.change_password.ChangePasswordStoreView
+import com.studiomk.matool.presentation.store_view.auth.update_email.UpdateEmailStoreView
 import com.studiomk.matool.presentation.store_view.shared.notice_alert.NoticeAlertDialog
 import com.studiomk.matool.presentation.view.items.NavigationItem
 import com.studiomk.matool.presentation.view.input.ListItemButton
@@ -72,6 +79,18 @@ fun AdminRegionTopStoreView(store: StoreOf<AdminRegionTop.State, AdminRegionTop.
             }
             CupertinoSection {
                 ListItemButton(
+                    onClick = {store.send(AdminRegionTop.Action.ChangePasswordTapped)},
+                    text = "パスワード変更",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                ListItemButton(
+                    onClick = {store.send(AdminRegionTop.Action.UpdateEmailTapped)},
+                    text = "メールアドレス変更",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+            CupertinoSection {
+                ListItemButton(
                     onClick = { store.send(AdminRegionTop.Action.SignOutTapped) },
                     text = "ログアウト",
                     tint = MaterialTheme.colorScheme.error
@@ -109,6 +128,24 @@ fun AdminRegionTopStoreView(store: StoreOf<AdminRegionTop.State, AdminRegionTop.
         onDismiss = { store.send(AdminRegionTop.Action.DestinationDismissed) }
     ) {
         AdminRegionDistrictCreateStoreView(store = it)
+    }
+    FullScreen(
+        item = store.optionalScope(
+            statePath = AdminRegionTop.destinationKey + AdminRegionTop.Destination.ChangePassword.key,
+            actionPath = AdminRegionTop.destinationCase + AdminRegionTop.Destination.ChangePassword.case
+        ),
+        onDismiss = { store.send(AdminRegionTop.Action.DestinationDismissed) }
+    ) {
+        ChangePasswordStoreView(store = it)
+    }
+    FullScreen(
+        item = store.optionalScope(
+            statePath = AdminRegionTop.destinationKey + AdminRegionTop.Destination.UpdateEmail.key,
+            actionPath = AdminRegionTop.destinationCase + AdminRegionTop.Destination.UpdateEmail.case
+        ),
+        onDismiss = { store.send(AdminRegionTop.Action.DestinationDismissed) }
+    ) {
+        UpdateEmailStoreView(store = it)
     }
 
     NoticeAlertDialog(

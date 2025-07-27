@@ -26,6 +26,9 @@ import com.studiomk.matool.presentation.store_view.shared.notice_alert.NoticeAle
 import com.studiomk.ktca.core.annotation.ChildAction
 import com.studiomk.ktca.core.annotation.ChildState
 import com.studiomk.ktca.core.reducer.LetScope
+import com.studiomk.matool.domain.contracts.auth.UpdateEmailResult
+import com.studiomk.matool.presentation.store_view.auth.change_password.ChangePassword
+import com.studiomk.matool.presentation.store_view.auth.update_email.UpdateEmail
 
 
 object AdminDistrictTop : ReducerOf<AdminDistrictTop.State, AdminDistrictTop.Action>, KoinComponent {
@@ -44,6 +47,10 @@ object AdminDistrictTop : ReducerOf<AdminDistrictTop.State, AdminDistrictTop.Act
         object Export : Destination()
         @ChildFeature(AdminLocation::class)
         object Location : Destination()
+        @ChildFeature(com.studiomk.matool.presentation.store_view.auth.change_password.ChangePassword::class)
+        object ChangePassword: Destination()
+        @ChildFeature(com.studiomk.matool.presentation.store_view.auth.update_email.UpdateEmail::class)
+        object UpdateEmail: Destination()
     }
 
     data class State(
@@ -70,14 +77,16 @@ object AdminDistrictTop : ReducerOf<AdminDistrictTop.State, AdminDistrictTop.Act
         object SignOutTapped : Action()
         object HomeTapped : Action()
         object DestinationDismissed : Action()
+        object ChangePasswordTapped: Action()
+        object UpdateEmailTapped: Action()
         data class GetDistrictReceived(val result: Result<PublicDistrict, ApiError>) : Action()
         data class GetRoutesReceived(val result: Result<List<RouteSummary>, ApiError>) : Action()
-        data class EditPrepared(val result: Result<DistrictTool, ApiError>,) : Action()
+        data class EditPrepared(val result: Result<DistrictTool, ApiError>) : Action()
         data class RouteEditPrepared(
             val routeResult: Result<PublicRoute, ApiError>,
             val toolResult: Result<DistrictTool, ApiError>
         ) : Action()
-        data class RouteCreatePrepared(val result: Result<DistrictTool, ApiError>,) : Action()
+        data class RouteCreatePrepared(val result: Result<DistrictTool, ApiError>) : Action()
         data class ExportPrepared(val result: Result<PublicRoute, ApiError>) : Action()
         data class SignOutReceived(val result: Result<UserRole, AuthError>) : Action()
         @ChildAction data class Destination(val action: DestinationAction) : Action()
@@ -130,6 +139,14 @@ object AdminDistrictTop : ReducerOf<AdminDistrictTop.State, AdminDistrictTop.Act
                         send(Action.ExportPrepared(result))
                     }
                 }
+                is Action.ChangePasswordTapped -> state.copy(
+                    destination = DestinationState.ChangePassword(
+                        ChangePassword.State())
+                ) to Effect.none()
+                is Action.UpdateEmailTapped -> state.copy(
+                    destination = DestinationState.UpdateEmail(
+                        UpdateEmail.State())
+                ) to Effect.none()
                 is Action.DestinationDismissed -> {
                     state.copy(destination = null) to Effect.none()
                 }
@@ -240,8 +257,8 @@ object AdminDistrictTop : ReducerOf<AdminDistrictTop.State, AdminDistrictTop.Act
                     state.copy(destination = DestinationState.Location(AdminLocation.State(id = state.district.id, isTracking = locationService.isTracking))) to Effect.none()
                 }
                 is Action.Destination -> {
-                    when (val destAction = action.action) {
-                        is DestinationAction.Edit -> when (destAction.action) {
+                    when (val action = action.action) {
+                        is DestinationAction.Edit -> when (action.action) {
                             is AdminDistrictEdit.Action.CancelTapped -> state.copy(destination = null) to Effect.none()
                             is AdminDistrictEdit.Action.PostReceived -> state.copy(destination = null, isDistrictLoading = true) to
                                 Effect.run { send ->
@@ -250,7 +267,7 @@ object AdminDistrictTop : ReducerOf<AdminDistrictTop.State, AdminDistrictTop.Act
                                 }
                             else -> state to Effect.none()
                         }
-                        is DestinationAction.Route -> when (destAction.action) {
+                        is DestinationAction.Route -> when (action.action) {
                             is AdminRouteInfo.Action.CancelTapped,
                             is AdminRouteInfo.Action.PostReceived,
                             is AdminRouteInfo.Action.DeleteReceived -> state.copy(destination = null, isRoutesLoading = true) to
@@ -260,12 +277,47 @@ object AdminDistrictTop : ReducerOf<AdminDistrictTop.State, AdminDistrictTop.Act
                                 }
                             else -> state to Effect.none()
                         }
-                        is DestinationAction.Location -> when (destAction.action) {
+                        is DestinationAction.Location -> when (action.action) {
                             is AdminLocation.Action.DismissTapped -> state.copy(destination = null) to Effect.none()
                             else -> state to Effect.none()
                         }
-                        is DestinationAction.Export -> when (destAction.action) {
+                        is DestinationAction.Export -> when (action.action) {
                             is AdminRouteExport.Action.DismissTapped -> state.copy(destination = null) to Effect.none()
+                            else -> state to Effect.none()
+                        }
+                        is DestinationAction.ChangePassword -> when (val action = action.action) {
+                            is ChangePassword.Action.Received ->{
+                                when(action.result){
+                                    is Result.Success -> state.copy(
+                                        destination = null,
+                                        alert = NoticeAlert.State.confirm("パスワードが変更されました")
+                                    ) to Effect.none()
+                                    is Result.Failure -> state to Effect.none()
+                                }
+                            }
+                            is ChangePassword.Action.DismissTapped -> state.copy(destination = null) to Effect.none()
+                            else -> state to Effect.none()
+                        }
+                        is DestinationAction.UpdateEmail -> when (val action = action.action) {
+                            is UpdateEmail.Action.ConfirmUpdateReceived -> {
+                                when (action.result) {
+                                    is Result.Success -> state.copy(
+                                        destination = null,
+                                        alert = NoticeAlert.State.confirm("メールアドレスが変更されました")
+                                    ) to Effect.none()
+                                    is Result.Failure -> state to Effect.none()
+                                }
+                            }
+                            is UpdateEmail.Action.UpdateReceived -> {
+                                when (action.result) {
+                                    is UpdateEmailResult.Completed -> state.copy(
+                                        destination = null,
+                                        alert = NoticeAlert.State.confirm("メールアドレスが変更されました")
+                                    ) to Effect.none()
+                                    else -> state to Effect.none()
+                                }
+                            }
+                            is UpdateEmail.Action.DismissTapped -> state.copy(destination = null) to Effect.none()
                             else -> state to Effect.none()
                         }
                     }
