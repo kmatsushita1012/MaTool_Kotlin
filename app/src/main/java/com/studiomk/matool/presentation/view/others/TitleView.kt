@@ -1,5 +1,6 @@
 package com.studiomk.matool.presentation.view.others
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
@@ -9,21 +10,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.studiomk.matool.presentation.view.input.DismissButton
 
+@SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun TitleView(
-    imageName: String,
-    titleText: String,
-    isDismissEnabled: Boolean,
+    text: String,
+    image: String? = null,
+    isDismissEnabled: Boolean = true,
     onDismiss: () -> Unit
 ) {
     // デフォルト比率
     val defaultAspectRatio = 297f / 397f
 
     // 画像のアスペクト比を取得（リソースから取得できなければデフォルト）
-    val aspectRatio = remember(imageName) {
+    val aspectRatio = remember(image) {
         // 画像サイズ取得はリソースからは難しいためデフォルト比率を使う
         defaultAspectRatio
     }
@@ -69,9 +72,10 @@ fun TitleView(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = titleText,
+                text = text,
                 style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
-                color = Color.White
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
             )
         }
     }

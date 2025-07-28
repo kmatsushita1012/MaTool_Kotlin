@@ -1,6 +1,5 @@
 package com.studiomk.matool.presentation.store_view.auth.login
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,7 +16,10 @@ import com.studiomk.matool.presentation.view.navigation.CupertinoToolBar
 import com.studiomk.matool.presentation.view.navigation.CupertinoToolbarLeadingButton
 import com.studiomk.ktca.core.store.StoreOf
 import com.studiomk.ktca.ui.FullScreen
+import com.studiomk.matool.presentation.store_view.auth.reset_password.ResetPasswordStoreView
+import com.studiomk.matool.presentation.view.input.CupertinoSecondaryButton
 import io.github.alexzhirkevich.cupertino.CupertinoButton
+import io.github.alexzhirkevich.cupertino.CupertinoButtonDefaults.borderedProminentButtonColors
 import io.github.alexzhirkevich.cupertino.ExperimentalCupertinoApi
 import io.github.alexzhirkevich.cupertino.icons.CupertinoIcons
 import io.github.alexzhirkevich.cupertino.icons.outlined.House
@@ -81,16 +83,36 @@ fun LoginStoreView(store: StoreOf<Login.State, Login.Action>) {
             ) {
                 Text("ログイン", color = Color.White, style = MaterialTheme.typography.titleMedium,)
             }
+            CupertinoSecondaryButton(
+                onClick = { store.send(Login.Action.ResetPasswordTapped) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(44.dp)
+            ) {
+                Text("パスワードを忘れた場合",
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
             Spacer(modifier = Modifier.weight(1f))
         }
     }
     // ConfirmSignInのフルスクリーン表示
     FullScreen(
         item = store.optionalScope(
-            statePath = Login.confirmSignInKey,
-            actionPath = Login.confirmSignInCase
+            statePath = Login.destinationKey + Login.Destination.ConfirmSignIn.key,
+            actionPath = Login.destinationCase + Login.Destination.ConfirmSignIn.case
         )
     ) {
         ConfirmSignInView(it)
+    }
+
+    FullScreen(
+        item = store.optionalScope(
+            statePath = Login.destinationKey + Login.Destination.ResetPassword.key,
+            actionPath = Login.destinationCase + Login.Destination.ResetPassword.case
+        )
+    ) {
+        ResetPasswordStoreView(it)
     }
 }

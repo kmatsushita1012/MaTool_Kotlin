@@ -1,24 +1,31 @@
 package com.studiomk.matool.data.auth.aws_cognito
 
+import android.util.Log
+import com.amplifyframework.auth.AuthException
+import com.amplifyframework.auth.AuthUserAttribute
 import com.amplifyframework.auth.AuthUserAttributeKey
+import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin
 import com.amplifyframework.auth.cognito.AWSCognitoAuthSession
+import com.amplifyframework.auth.cognito.exceptions.service.InvalidParameterException
+import com.amplifyframework.auth.options.AuthUpdateUserAttributeOptions
+import com.amplifyframework.auth.result.step.AuthUpdateAttributeStep
 import com.amplifyframework.core.Amplify
+import com.studiomk.matool.App
 import com.studiomk.matool.domain.contracts.auth.AuthError
 import com.studiomk.matool.domain.contracts.auth.AuthProvider
 import com.studiomk.matool.domain.contracts.auth.SignInResponse
+import com.studiomk.matool.domain.contracts.auth.UpdateEmailResult
 import com.studiomk.matool.domain.entities.shared.*
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
 class AwsCognitoProvider : AuthProvider {
-    override suspend fun initialize(): Result<String, AuthError> =
-        suspendCancellableCoroutine { cont ->
-            try {
-                cont.resume(Result.Success("Success"))
-            } catch (e: Exception) {
-                cont.resume(Result.Failure(AuthError.Unknown("init ${e.localizedMessage}")))
-            }
-        }
+    //アプリ起動時に行うためスキップ
+    override fun initialize(): Unit{
+        Amplify.addPlugin(AWSCognitoAuthPlugin())
+        Amplify.configure(App.context)
+        return
+    }
 
     override suspend fun signIn(username: String, password: String): SignInResponse =
         suspendCancellableCoroutine { cont ->
@@ -37,7 +44,7 @@ class AwsCognitoProvider : AuthProvider {
                     }
                 },
                 { error ->
-                    cont.resume(SignInResponse.Failure(AuthError.Unknown("signIn ${error.localizedMessage}")))
+                    cont.resume(SignInResponse.Failure(AuthError.Unknown(error.localizedMessageJa)))
                 }
             )
         }
@@ -59,7 +66,7 @@ class AwsCognitoProvider : AuthProvider {
             { error ->
                 cont.resume(
                     Result.Failure(
-                        AuthError.Unknown("confirmSignIn error: ${error.localizedMessage}")
+                        AuthError.Unknown(error.localizedMessageJa)
                     )
                 )
             }
@@ -82,13 +89,13 @@ class AwsCognitoProvider : AuthProvider {
                         }
                         cont.resume(Result.Success(userRole))
                     },
-                    {
-                        cont.resume(Result.Failure(AuthError.Unknown("user ${it.localizedMessage}")))
+                    { error ->
+                        cont.resume(Result.Failure(AuthError.Unknown(error.localizedMessageJa)))
                     }
                 )
             },
-            {
-                cont.resume(Result.Failure(AuthError.Unknown("role ${it.localizedMessage}")))
+            { error ->
+                cont.resume(Result.Failure(AuthError.Unknown(error.localizedMessageJa)))
             }
         )
     }
@@ -108,14 +115,86 @@ class AwsCognitoProvider : AuthProvider {
                 }
             },
             { error ->
-                cont.resume(Result.Failure(AuthError.Unknown(error.localizedMessage ?: "getTokens error")))
+                cont.resume(Result.Failure(AuthError.Unknown(error.localizedMessageJa)))
             }
         )
     }
 
     override suspend fun signOut(): Result<Boolean, AuthError> = suspendCancellableCoroutine { cont ->
-        Amplify.Auth.signOut{ result ->
+        Amplify.Auth.signOut { result ->
             cont.resume(Result.Success(true))
         }
+    }
+
+    override suspend fun changePassword(current: String, new: String): Result<Unit, AuthError> = suspendCancellableCoroutine { cont ->
+        Amplify.Auth.updatePassword(
+            current,
+            new,
+            {
+                cont.resume(Result.Success(Unit))
+            },
+            { error ->
+                cont.resume(Result.Failure(AuthError.Unknown(error.localizedMessageJa)))
+            }
+        )
+    }
+
+    override suspend fun resetPassword(username: String): Result<Unit, AuthError> = suspendCancellableCoroutine { cont ->
+        Amplify.Auth.resetPassword(
+            username,
+            {
+                cont.resume(Result.Success(Unit))
+            },
+            { error ->
+                cont.resume(Result.Failure(AuthError.Unknown(error.localizedMessageJa)))
+            }
+        )
+    }
+
+    override suspend fun confirmResetPassword(username: String, newPassword: String, code: String): Result<Unit, AuthError> = suspendCancellableCoroutine { cont ->
+        Amplify.Auth.confirmResetPassword(
+            username,
+            newPassword,
+            code,
+            {
+                cont.resume(Result.Success(Unit))
+            },
+            { error ->
+                cont.resume(Result.Failure(AuthError.Unknown(error.localizedMessageJa)))
+            }
+        )
+    }
+
+    override suspend fun updateEmail(newEmail: String): UpdateEmailResult = suspendCancellableCoroutine { cont ->
+        Amplify.Auth.updateUserAttribute(
+            AuthUserAttribute(AuthUserAttributeKey.email(), newEmail),
+            AuthUpdateUserAttributeOptions.defaults(),
+            { result ->
+                when (result.nextStep.updateAttributeStep) {
+                    AuthUpdateAttributeStep.DONE ->
+                        cont.resume(UpdateEmailResult.Completed)
+                    AuthUpdateAttributeStep.CONFIRM_ATTRIBUTE_WITH_CODE -> {
+                        val destination = result.nextStep.codeDeliveryDetails?.destination ?: ""
+                        cont.resume(UpdateEmailResult.VerificationRequired(destination))
+                    }
+                }
+            },
+            { error ->
+                cont.resume(UpdateEmailResult.Failure(AuthError.Unknown(error.localizedMessageJa)))
+            }
+        )
+    }
+
+    override suspend fun confirmUpdateEmail(code: String): Result<Unit, AuthError> = suspendCancellableCoroutine { cont ->
+        Amplify.Auth.confirmUserAttribute(
+            AuthUserAttributeKey.email(),
+            code,
+            {
+                cont.resume(Result.Success(Unit))
+            },
+            { error ->
+                cont.resume(Result.Failure(AuthError.Unknown(error.localizedMessageJa)))
+            }
+        )
     }
 }

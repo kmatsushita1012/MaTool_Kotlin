@@ -27,7 +27,7 @@ android {
         targetSdk = 35
 
         versionCode = envVersionCode ?: 1
-        versionName = "2.0.3"
+        versionName = "2.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         defaultConfig {
